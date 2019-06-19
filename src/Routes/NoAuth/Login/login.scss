@@ -1,0 +1,432 @@
+
+.loginWrapper{
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background-color: #F5F5F5;
+  overflow: hidden !important;
+  .circle{
+    position: absolute;
+    height: 500px;
+    right: -300px;
+    bottom: -209px;
+    z-index: 5 !important;
+  }
+
+  .circleWhite{
+    position: absolute;
+    height: 500px;
+    right: -300px;
+    bottom: -209px;
+    opacity: .4;
+    z-index: 9;
+  }
+
+  .triangle{
+    position: absolute;
+    height: 500px;
+    left: -300px;
+    top: -209px;
+    z-index: 5 !important;
+    transform: rotate(-33deg);
+  }
+
+  .triangleWhite{
+    position: absolute;
+    height: 500px;
+    left: -300px;
+    top: -209px;
+    opacity: .4;
+    transform: rotate(-33deg);
+    z-index: 9;
+  }
+
+  .parrotWrapper{
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    z-index: 100;
+    .parrot{
+      z-index: 100;
+      height: 140px;
+    }
+    .parrotShield{
+      z-index: 100;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .forgotText{
+    margin-top: 20px;
+  }
+
+  .innerBox{
+    z-index: 2;
+    position: relative;
+    width: 1200px;
+    height: 750px;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    overflow: hidden;
+    //box-shadow: 0 14px 28px rgba(0,0,0,0.05), 0 10px 10px rgba(0,0,0,0.08);
+  }
+
+  .fakeInnerBox{
+    border-radius: 10px;
+    z-index: 1;
+    position: absolute;
+    overflow: visible !important;
+    //box-shadow: 0 14px 28px rgba(0,0,0,0.05), 0 10px 10px rgba(0,0,0,0.08);
+  }
+
+  .slider{
+    z-index: 9;
+    position: absolute;
+    top: 0px;
+    height: 100%;
+    width: 50%;
+    background: #8E2DE2;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #4A00E0, #8E2DE2);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #4A00E0, #8E2DE2); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 8;
+  }
+
+  .boxText{
+    margin-top: 20%;
+    position: absolute;
+    top: 0px;
+    width: 40%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .rightBoxText{
+    right: 0px;
+    animation: fadeOut 1s forwards ease-out;
+  }
+
+  .rightBoxTextSlideIn{
+    z-index: 10;
+    right: 0px;
+    animation: rightTextSlideIn 1s forwards ease-out;
+    animation-delay: .2s;
+  }
+
+  .leftBoxText{
+    left: 0px;
+    opacity: 0;
+  }
+
+  .leftBoxTextSlideIn{
+    z-index: 10;
+    left: 0px;
+    animation: leftTextSlideIn 1s forwards ease-out;
+    animation-delay: .2s;
+  }
+
+  .sliderLogin{
+    animation: slideRight 1.3s ease-out forwards;
+  }
+
+  .sliderSignup{
+    animation: slideLeft 1.3s ease-out forwards;
+  }
+
+  .largeText{
+    color: white;
+    font-size: 42px;
+    margin-bottom: 10px;
+  }
+  .mediumText{
+    color: white;
+    font-size: 24px;
+    margin-bottom: 50px;
+    opacity: .7;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: center;
+  }
+
+  .smallText{
+    color: black;
+    font-size: 14px;
+    margin-bottom: 10px;
+    opacity: .5;
+  }
+
+  .buttonSecondary{
+    z-index: 100;
+    height: 50px;
+    width: 140px;
+    background-color: white;
+    border-radius: 4px;
+    font-size: 72px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    span{
+      background: -webkit-linear-gradient(#4A00E0, #8E2DE2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    &:hover{
+      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+  }
+
+  .buttonPrimary{
+    z-index: 3;
+    height: 50px;
+    width: 140px;
+    background: #8E2DE2;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #4A00E0, #8E2DE2);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #4A00E0, #8E2DE2);
+    border-radius: 4px;
+    font-size: 72px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    span{
+      color: white;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    &:hover{
+      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+  }
+
+  .signInWrapper{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 60%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .socialWrapper{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    &:hover{
+      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+    border-radius: 50%;
+    height: 35px;
+    width: 35px;
+    cursor: pointer;
+    i{
+      margin: 10px;
+      color: #616161;
+    }
+  }
+
+  .gradientText {
+    background: -webkit-linear-gradient(#4A00E0, #8E2DE2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .signIn{
+    position: absolute;
+    height: 100%;
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .signInActive{
+    animation: signInFadeIn 1.3s ease-out forwards;
+    z-index: 7;
+  }
+
+  .signInInactive{
+    animation: signInFadeAway 1.3s ease-out forwards;
+    z-index: 1;
+  }
+
+  .signUp{
+    position: absolute;
+    height: 100%;
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .signUpActive{
+    z-index: 7;
+    animation: signUpFadeIn 1.3s ease-out forwards;
+  }
+
+  .signUpInactive{
+    z-index: 1;
+    animation: signUpFadeAway 1.3s ease-out forwards;
+  }
+
+
+  @keyframes slideRight{
+    0%{
+      left: 0px;
+      width: 40%;
+    }
+    50%{
+      width: 50%;
+      padding-left: 7.5%;
+      padding-right: 7.5%;
+    }
+    100%{
+      left: calc(100% - 40%);
+      width: 40%;
+    }
+  }
+
+  @keyframes slideLeft{
+    0%{
+      right: 0px;
+      width: 40%;
+    }
+    50%{
+      width: 50%;
+      padding-left: 7.5%;
+      padding-right: 7.5%;
+    }
+    100%{
+      right: calc(100% - 40%);
+      width: 40%;
+    }
+  }
+
+  @keyframes rightTextSlideIn{
+    from{
+      right: -100px;
+    }
+    to{
+      right: 0px;
+    }
+  }
+
+  @keyframes leftTextSlideIn{
+    from{
+      left: -100px;
+    }
+    to{
+      left: 0px;
+    }
+  }
+
+  @keyframes signInFadeAway{
+    0%{
+      left: 0px;
+    }
+    29%{
+      opacity: 1;
+    }
+    30%{
+      opacity: 0;
+    }
+    100%{
+      opacity: 0;
+      left: 60%;
+    }
+  }
+
+  @keyframes signInFadeIn{
+    0%{
+      left: 60%;
+      opacity: 0;
+    }
+    29%{
+      opacity: 0;
+    }
+    30%{
+      opacity: 1;
+    }
+    100%{
+      opacity: 1;
+      left: 0px;
+    }
+  }
+
+  @keyframes signUpFadeAway{
+    0%{
+      left: 40%;
+    }
+    29%{
+      opacity: 1;
+    }
+    30%{
+      opacity: 0;
+    }
+    100%{
+      opacity: 0;
+      left: 0px;
+    }
+  }
+
+  @keyframes signUpFadeIn{
+    0%{
+      left: 0px;
+      opacity: 0;
+    }
+    29%{
+      opacity: 0;
+    }
+    30%{
+      opacity: 1;
+    }
+    100%{
+      opacity: 1;
+      left: 40%;
+    }
+  }
+
+  @keyframes fadeOut{
+    0%{
+      z-index: 10;
+      opacity: 1;
+    }
+    80%{
+      opacity: 1;
+    }
+    100%{
+      z-index: 1;
+      opacity: 0;
+    }
+  }
+
+}
