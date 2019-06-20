@@ -5,7 +5,7 @@ import fire from "./fire";
 import firebase from "firebase";
 import "./App.scss";
 import { logout } from "./Redux/Actions/auth";
-
+import MyButton from "./Components/Button/Button"
 import Login from "./Routes/NoAuth/Login/login.js";
 
 class App extends Component {
@@ -16,7 +16,7 @@ class App extends Component {
   }
 
   state = {
-    isLogin: true,
+    isLogin: false,
     user: null,
     email: null,
     password: null

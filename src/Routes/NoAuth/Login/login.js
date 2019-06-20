@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { signUp, login, loginWithGoogle } from "../../../Redux/Actions/auth";
+import { makeStyles } from '@material-ui/styles';
+import MyButton from "../../../Components/Button/Button.js"
 
 // Frontend Lib Imports
 
@@ -21,7 +23,7 @@ import Input from "../../../Components/Input/input.js";
 class Login extends Component {
 
   state = {
-    isLogin: false,
+    isLogin: true,
     signupEmail: null,
     signupPassword: null,
     loginEmail: null,
@@ -86,9 +88,9 @@ class Login extends Component {
             <div className="smallText">or use your email account</div>
             <Input type="email" type="email" onChange={(email)=>this.setState({loginEmail: email})} label="Email" />
             <Input type="password" type="password" onChange={(password)=>this.setState({loginPassword: password})} label="Password" />
-            <div onClick={()=>login(loginEmail, loginPassword)} className="buttonPrimary">
-              <span> Log In </span>
-            </div>
+            <MyButton onClick={()=>login(loginEmail, loginPassword)} variant="contained" color="purple" >
+              Log In
+            </MyButton>
             <span className="forgotText">Forgot your Password?</span>
           </div>
 

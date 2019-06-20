@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import TextField from '@material-ui/core/TextField';
 
 // Frontend Lib Imports
 
@@ -16,13 +17,14 @@ class Input extends Component {
   render() {
     const { type } = this.props;
     return (
-      <form>
-        <div type={type} className="group">
-          <input onChange={(e)=>this.handleChange(e)} type="text" required />
-          <span className="highlight"></span>
-          <span className="bar"></span>
-          <label>{this.props.label}</label>
-        </div>
+      <form noValidate autoComplete="off">
+        <TextField
+          id="standard-name"
+          label="Email"
+          onChange={(e)=>this.handleChange(e)}
+          margin="normal"
+          type={type}
+        />
       </form>
     )
   }
@@ -34,3 +36,11 @@ Input.defaultProps = {
 }
 
 export default Input
+
+
+
+
+
+/*
+value={values.name}
+*/
