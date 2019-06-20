@@ -5,7 +5,6 @@ import fire from "./fire";
 import firebase from "firebase";
 import "./App.scss";
 import { logout } from "./Redux/Actions/auth";
-import MyButton from "./Components/Button/Button"
 import Login from "./Routes/NoAuth/Login/login.js";
 
 class App extends Component {
@@ -25,7 +24,6 @@ class App extends Component {
   authListener() {
     fire.auth().onAuthStateChanged(user => {
       if (user) {
-        console.log("WE hAVE A NEW USER!!!", user);
         this.setState({ user: user });
       } else {
         this.setState({ user: null });

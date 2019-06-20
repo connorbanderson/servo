@@ -2,7 +2,7 @@ import React from "react";
 import { styled } from "@material-ui/styles";
 import Button from "@material-ui/core/Button";
 
-const MyButton = styled(({ color, ...other }) => <Button {...other} />)({
+const GradientButton = styled(({ color, ...other }) => <Button {...other} />)({
   background: props =>
     props.color === "purple"
       ? "linear-gradient(45deg, #E94057 30%, #F27121 90%)"
@@ -15,7 +15,7 @@ const MyButton = styled(({ color, ...other }) => <Button {...other} />)({
   margin: 8
 });
 
-export default MyButton;
+export default GradientButton;
 
 /*
 boxShadow: props =>
