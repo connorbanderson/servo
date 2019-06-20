@@ -4,8 +4,9 @@ import { addMessage, getMessages } from "./Redux/Actions/messages";
 import fire from "./fire";
 import firebase from "firebase";
 import "./App.scss";
+import { logout } from "./Redux/Actions/auth";
 
-import Login from './Routes/NoAuth/Login/login.js'
+import Login from "./Routes/NoAuth/Login/login.js";
 
 class App extends Component {
   componentWillMount() {
@@ -32,65 +33,12 @@ class App extends Component {
     });
   }
 
-  handleLogin = e => {
-    const { email, password } = this.state;
-    // in case I hook this up to a form, will prevent page reload
-    e.preventDefault();
-    fire
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(u => {
-        console.log("PROMISE RETURN!!!");
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-
-  handleLoginWithGoogle = () => {
-    const googleProvider = new firebase.auth.GoogleAuthProvider();
-    fire
-      .auth()
-      .signInWithPopup(googleProvider)
-      .then(u => {
-        console.log("PROMISE RETURN!!!");
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-
-
-
-  handleLogout = () => {
-    fire.auth().signOut();
-  };
-
-  handleSignup = e => {
-    const { email, password } = this.state;
-    // in case I hook this up to a form, will prevent page reload
-    e.preventDefault();
-    fire
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(u => {
-        console.log("PROMISE RETURN!!!");
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-
   render() {
-    const { addMessage, messages } = this.props;
+    const { addMessage, messages, logout } = this.props;
     const { user, isLogin } = this.state;
     return (
       <div className="App">
-
-        {
-          user ? <span> WOOT </span> : <Login />
-        }
-
+        {user ? <button onClick={() => logout()}>Logout</button> : <Login />}
       </div>
     );
   }
@@ -102,7 +50,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   addMessage: payload => dispatch(addMessage(payload)),
-  getMessages: () => dispatch(getMessages())
+  getMessages: () => dispatch(getMessages()),
+  logout: () => dispatch(logout())
 });
 
 export default connect(
