@@ -9,21 +9,26 @@ import './input.scss'
 class Input extends Component {
 
   handleChange = (e) => {
-    console.log('handleChange', e.target.value);
-    const { onChange } = this.props;
+    const { onChange, error, clearError } = this.props;
     e.preventDefault();
+    if (error) {
+      console.log('this is clearError', clearError);
+      clearError();
+    }
     this.props.onChange(e.target.value);
-  }
+  };
 
   render() {
-    const { type, label, onSubmit, handleSubmit } = this.props;
+    const { type, label, onSubmit, handleSubmit, error, helperText, clearError } = this.props;
     return (
-      <form onSubmit={(e)=> handleSubmit(e)} noValidate autoComplete="off">
+      <form style={{maxWidth: '195px'}} onSubmit={(e)=> handleSubmit(e)} noValidate autoComplete="off">
         <TextField
           label={label}
           onChange={(e)=>this.handleChange(e)}
           margin="normal"
           type={type}
+          error={error}
+          helperText={helperText}
         />
       </form>
     )

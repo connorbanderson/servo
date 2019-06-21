@@ -85,3 +85,10 @@ export const login = (email, password) => dispatch => {
       });
     });
 };
+
+export const clearLoginError = () => dispatch => {
+  console.log('CALLING CLEAR ERROR!! ACTION');
+  dispatch({
+    type: "CLEAR_LOGIN_ERROR",
+  });
+};

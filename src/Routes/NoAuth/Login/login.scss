@@ -6,6 +6,15 @@ $triangleLeftPosition: -300px;
 $triangleTopPosition: -209px;
 
 
+.errorTextInputWrapper{
+  width: auto;
+  height: 104px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
 .loginWrapper{
   position: relative;
   display: flex;
@@ -16,13 +25,69 @@ $triangleTopPosition: -209px;
   height: 100vh;
   background-color: #F5F5F5;
   overflow: hidden !important;
+  &::after {
+    content: "";
+    background-image: url("entranceBackground.svg");
+    background-repeat: repeat repeat;
+    background-size: 300px 300px;
+    opacity: 0.17;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: 1;
+  }
   .topRightLogo{
-    height: 74px;
-    width: 74px;
+    height: 120px;
+    width: 120px;
     position: absolute;
     top: 30px;
     left: 30px;
   }
+  .topLeftCircuitBoard{
+    position: absolute;
+    height: 400px;
+    width: auto;
+    top: -142px;
+    left: -170px;
+    transform: rotate(75deg);
+    opacity: .7;
+    z-index: 5 !important;
+
+  }
+  .topLeftCircuitBoardWhite{
+    position: absolute;
+    height: 400px;
+    width: auto;
+    top: -142px;
+    left: -170px;
+    transform: rotate(75deg);
+    opacity: .4;
+    z-index: 9;
+  }
+  .botRightCircuitBoard{
+    position: absolute;
+    height: 400px;
+    width: auto;
+    bottom: -166px;
+    right: -190px;
+    transform: rotate(-60deg);
+    opacity: .7;
+    z-index: 5 !important;
+
+  }
+  .botRightCircuitBoardWhite{
+    position: absolute;
+    height: 400px;
+    width: auto;
+    bottom: -166px;
+    right: -190px;
+    transform: rotate(-60deg);
+    opacity: .4;
+    z-index: 9;
+  }
+
   .circle{
     position: absolute;
     height: $circleHeight;

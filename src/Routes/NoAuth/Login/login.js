@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { signUp, login, loginWithGoogle } from "../../../Redux/Actions/auth";
+import { signUp, login, loginWithGoogle, clearLoginError } from "../../../Redux/Actions/auth";
 import { makeStyles } from "@material-ui/styles";
 import GradientButton from "../../../Components/GradientButton";
 
@@ -16,13 +16,15 @@ import triangle from "./triangle.svg";
 import triangleWhite from "./triangleWhite.svg";
 import logo from "./logo.svg";
 import googleIcon from "./googleIcon.svg";
+import circuitboard from "./circuitboard.svg";
+import circuitboardWhite from "./circuitboardWhite.svg";
 
 //Component Imports
 import Input from "../../../Components/Input/input.js";
 
 class Login extends Component {
   state = {
-    isLogin: false,
+    isLogin: true,
     signupEmail: null,
     signupPassword: null,
     loginEmail: null,
@@ -37,8 +39,8 @@ class Login extends Component {
       loginEmail,
       loginPassword
     } = this.state;
-    const { loginWithGoogle, auth, signUp, login } = this.props;
-    console.log("userSignup", loginEmail, loginPassword);
+    const { loginWithGoogle, auth, signUp, login, clearLoginError } = this.props;
+    console.log("auth", auth);
     return (
       <section className="loginWrapper">
         <img src={logo} className="topRightLogo noselect" alt="logo" />
@@ -119,17 +121,23 @@ class Login extends Component {
             <Input
               label="Email"
               type="email"
-              onChange={email => this.setState({ loginEmail: email })}
+              onChange={email => {this.setState({ loginEmail: email })}}
               handleSubmit={(e) => [e.preventDefault(), login(loginEmail, loginPassword)]}
+              error={auth.loginError !== null}
+              clearError={clearLoginError}
             />
-            <Input
-              label="Password"
-              type="password"
-              onChange={password => this.setState({ loginPassword: password })}
-              handleSubmit={(e) => [e.preventDefault(), login(loginEmail, loginPassword)]}
-            />
+            <div className='errorTextInputWrapper'>
+              <Input
+                label="Password"
+                type="password"
+                onChange={password => this.setState({ loginPassword: password })}
+                handleSubmit={(e) => [e.preventDefault(), login(loginEmail, loginPassword)]}
+                error={auth.loginError !== null}
+                helperText={auth.loginError !== null ? auth.loginError : null}
+                clearError={clearLoginError}
+              />
+            </div>
             <GradientButton
-              style={{ marginTop: "40px" }}
               onClick={() => login(loginEmail, loginPassword)}
               variant="contained"
               color="purple"
@@ -201,14 +209,13 @@ class Login extends Component {
               Sign Up
             </GradientButton>
           </div>
-
-          <img src={circleWhite} className="circleWhite" alt="logo" />
-          <img src={triangleWhite} className="triangleWhite" alt="logo" />
+          <img src={circuitboardWhite} className="topLeftCircuitBoardWhite" alt="topRightCircuitBoardWhite" />
+          <img src={circuitboardWhite} className="botRightCircuitBoardWhite" alt="topRightCircuitBoardWhite" />
         </div>
 
         <div className="innerBox fakeInnerBox">
-          <img src={circle} className="circle" alt="logo" />
-          <img src={triangle} className="triangle" alt="logo" />
+          <img src={circuitboard} className="topLeftCircuitBoard" alt="topRightCircuitBoardWhite" />
+          <img src={circuitboard} className="botRightCircuitBoard" alt="topRightCircuitBoardWhite" />
         </div>
       </section>
     );
@@ -222,7 +229,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   loginWithGoogle: () => dispatch(loginWithGoogle()),
   signUp: (email, password) => dispatch(signUp(email, password)),
-  login: (email, password) => dispatch(login(email, password))
+  login: (email, password) => dispatch(login(email, password)),
+  clearLoginError: () => dispatch(clearLoginError()),
 });
 
 export default connect(

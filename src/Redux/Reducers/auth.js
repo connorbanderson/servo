@@ -1,7 +1,9 @@
 const default_state = {
   isAuthed: false,
   loading: false,
-  user: null
+  user: null,
+  loginError: null,
+  signUpError: null,
 };
 
 export default (state = default_state, action) => {
@@ -15,7 +17,7 @@ export default (state = default_state, action) => {
       return {
         ...state,
         loading: false,
-        error: action.payload
+        signUpError: action.payload
       };
     case "LOGIN_WITH_GOOGLE_REQUEST":
       return {
@@ -37,8 +39,14 @@ export default (state = default_state, action) => {
       return {
         ...state,
         loading: false,
-        error: action.payload
+        loginError: "You have entered an invalid username or password.",
       };
+    case "CLEAR_LOGIN_ERROR":
+        return {
+          ...state,
+          loading: false,
+          loginError: null,
+        };
     case "LOGOUT":
       return {
         default_state
