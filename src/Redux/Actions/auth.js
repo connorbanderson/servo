@@ -54,7 +54,6 @@ export const loginWithGoogle = () => dispatch => {
 };
 
 export const signUp = (email, password) => dispatch => {
-  console.log("SIGNING UP ACTION!!", email, password);
   dispatch({
     type: "SIGNUP_REQUEST"
   });
@@ -63,6 +62,7 @@ export const signUp = (email, password) => dispatch => {
     .createUserWithEmailAndPassword(email, password)
     .then()
     .catch(error => {
+      console.log('SIGNUP ERROR', error);
       dispatch({
         type: "SIGN_UP_FAIL",
         payload: error
@@ -79,6 +79,7 @@ export const login = (email, password) => dispatch => {
     .signInWithEmailAndPassword(email, password)
     .then()
     .catch(error => {
+      console.log('login ERROR', error);
       dispatch({
         type: "LOGIN_FAIL",
         payload: error
@@ -87,8 +88,13 @@ export const login = (email, password) => dispatch => {
 };
 
 export const clearLoginError = () => dispatch => {
-  console.log('CALLING CLEAR ERROR!! ACTION');
   dispatch({
     type: "CLEAR_LOGIN_ERROR",
+  });
+};
+
+export const clearSignUpError = () => dispatch => {
+  dispatch({
+    type: "CLEAR_SIGN_UP_ERROR",
   });
 };

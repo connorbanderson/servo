@@ -1,6 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { signUp, login, loginWithGoogle, clearLoginError } from "../../../Redux/Actions/auth";
+import {
+  signUp,
+  login,
+  loginWithGoogle,
+  clearLoginError,
+  clearSignUpError
+} from "../../../Redux/Actions/auth";
 import { makeStyles } from "@material-ui/styles";
 import GradientButton from "../../../Components/GradientButton";
 
@@ -24,7 +30,7 @@ import Input from "../../../Components/Input/input.js";
 
 class Login extends Component {
   state = {
-    isLogin: true,
+    isLogin: false,
     signupEmail: null,
     signupPassword: null,
     loginEmail: null,
@@ -39,7 +45,14 @@ class Login extends Component {
       loginEmail,
       loginPassword
     } = this.state;
-    const { loginWithGoogle, auth, signUp, login, clearLoginError } = this.props;
+    const {
+      loginWithGoogle,
+      auth,
+      signUp,
+      login,
+      clearLoginError,
+      clearSignUpError
+    } = this.props;
     console.log("auth", auth);
     return (
       <section className="loginWrapper">
@@ -121,17 +134,27 @@ class Login extends Component {
             <Input
               label="Email"
               type="email"
-              onChange={email => {this.setState({ loginEmail: email })}}
-              handleSubmit={(e) => [e.preventDefault(), login(loginEmail, loginPassword)]}
+              onChange={email => {
+                this.setState({ loginEmail: email });
+              }}
+              handleSubmit={e => [
+                e.preventDefault(),
+                login(loginEmail, loginPassword)
+              ]}
               error={auth.loginError !== null}
               clearError={clearLoginError}
             />
-            <div className='errorTextInputWrapper'>
+            <div className="errorTextInputWrapper">
               <Input
                 label="Password"
                 type="password"
-                onChange={password => this.setState({ loginPassword: password })}
-                handleSubmit={(e) => [e.preventDefault(), login(loginEmail, loginPassword)]}
+                onChange={password =>
+                  this.setState({ loginPassword: password })
+                }
+                handleSubmit={e => [
+                  e.preventDefault(),
+                  login(loginEmail, loginPassword)
+                ]}
                 error={auth.loginError !== null}
                 helperText={auth.loginError !== null ? auth.loginError : null}
                 clearError={clearLoginError}
@@ -191,15 +214,30 @@ class Login extends Component {
               type="email"
               onChange={email => this.setState({ signupEmail: email })}
               label="Email"
-              handleSubmit={(e) => [e.preventDefault(), signUp(signupEmail, signupPassword)]}
+              handleSubmit={e => [
+                e.preventDefault(),
+                signUp(signupEmail, signupPassword)
+              ]}
+              error={auth.signUpError !== null}
+              clearError={clearSignUpError}
             />
-            <Input
-              label="Password"
-              type="password"
-              onChange={password => this.setState({ signupPassword: password })}
-              label="Password"
-              handleSubmit={(e) => [e.preventDefault(), signUp(signupEmail, signupPassword)]}
-            />
+            <div className="errorTextInputWrapper">
+              <Input
+                label="Password"
+                type="password"
+                onChange={password =>
+                  this.setState({ signupPassword: password })
+                }
+                label="Password"
+                handleSubmit={e => [
+                  e.preventDefault(),
+                  signUp(signupEmail, signupPassword)
+                ]}
+                error={auth.signUpError !== null}
+                clearError={clearSignUpError}
+                helperText={auth.signUpError !== null ? auth.signUpError : null}
+              />
+            </div>
             <GradientButton
               style={{ marginTop: "40px" }}
               onClick={() => signUp(signupEmail, signupPassword)}
@@ -209,13 +247,29 @@ class Login extends Component {
               Sign Up
             </GradientButton>
           </div>
-          <img src={circuitboardWhite} className="topLeftCircuitBoardWhite" alt="topRightCircuitBoardWhite" />
-          <img src={circuitboardWhite} className="botRightCircuitBoardWhite" alt="topRightCircuitBoardWhite" />
+          <img
+            src={circuitboardWhite}
+            className="topLeftCircuitBoardWhite"
+            alt="topRightCircuitBoardWhite"
+          />
+          <img
+            src={circuitboardWhite}
+            className="botRightCircuitBoardWhite"
+            alt="topRightCircuitBoardWhite"
+          />
         </div>
 
         <div className="innerBox fakeInnerBox">
-          <img src={circuitboard} className="topLeftCircuitBoard" alt="topRightCircuitBoardWhite" />
-          <img src={circuitboard} className="botRightCircuitBoard" alt="topRightCircuitBoardWhite" />
+          <img
+            src={circuitboard}
+            className="topLeftCircuitBoard"
+            alt="topRightCircuitBoardWhite"
+          />
+          <img
+            src={circuitboard}
+            className="botRightCircuitBoard"
+            alt="topRightCircuitBoardWhite"
+          />
         </div>
       </section>
     );
@@ -231,6 +285,7 @@ const mapDispatchToProps = dispatch => ({
   signUp: (email, password) => dispatch(signUp(email, password)),
   login: (email, password) => dispatch(login(email, password)),
   clearLoginError: () => dispatch(clearLoginError()),
+  clearSignUpError: () => dispatch(clearSignUpError())
 });
 
 export default connect(
