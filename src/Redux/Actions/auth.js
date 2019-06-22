@@ -1,5 +1,6 @@
 import firebase from "firebase";
 import fire from "../../fire";
+import { AUTH_ERRORS, AUTH_ERROR_MESSAGES } from "../../constants.js";
 
 /////////////////////
 ///// FIREBASE /////
@@ -65,7 +66,7 @@ export const signUp = (email, password) => dispatch => {
       console.log('SIGNUP ERROR', error);
       dispatch({
         type: "SIGN_UP_FAIL",
-        payload: error
+        payload: AUTH_ERROR_MESSAGES[error.code]
       });
     });
 };
@@ -79,10 +80,9 @@ export const login = (email, password) => dispatch => {
     .signInWithEmailAndPassword(email, password)
     .then()
     .catch(error => {
-      console.log('login ERROR', error);
       dispatch({
         type: "LOGIN_FAIL",
-        payload: error
+        payload: AUTH_ERROR_MESSAGES[error.code]
       });
     });
 };

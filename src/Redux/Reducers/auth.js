@@ -1,4 +1,4 @@
-import { AUTH_MESSAGES } from "../../constants.js";
+import { AUTH_ERRORS, AUTH_ERROR_MESSAGES } from "../../constants.js";
 
 const default_state = {
   isAuthed: false,
@@ -19,7 +19,7 @@ export default (state = default_state, action) => {
       return {
         ...state,
         loading: false,
-        signUpError: "This email already exists in our system."
+        signUpError: action.payload
       };
     case "LOGIN_WITH_GOOGLE_REQUEST":
       return {
@@ -41,7 +41,7 @@ export default (state = default_state, action) => {
       return {
         ...state,
         loading: false,
-        loginError: "You have entered an invalid username or password."
+        loginError: action.payload
       };
     case "CLEAR_LOGIN_ERROR":
       return {

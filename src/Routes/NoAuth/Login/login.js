@@ -30,7 +30,7 @@ import Input from "../../../Components/Input/input.js";
 
 class Login extends Component {
   state = {
-    isLogin: false,
+    isLogin: true,
     signupEmail: null,
     signupPassword: null,
     loginEmail: null,
