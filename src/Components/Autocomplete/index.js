@@ -8,47 +8,13 @@ import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
 import Popper from "@material-ui/core/Popper";
 import { makeStyles } from "@material-ui/core/styles";
-
-const suggestions = [
-  { label: "Afghanistan" },
-  { label: "Aland Islands" },
-  { label: "Albania" },
-  { label: "Algeria" },
-  { label: "American Samoa" },
-  { label: "Andorra" },
-  { label: "Angola" },
-  { label: "Anguilla" },
-  { label: "Antarctica" },
-  { label: "Antigua and Barbuda" },
-  { label: "Argentina" },
-  { label: "Armenia" },
-  { label: "Aruba" },
-  { label: "Australia" },
-  { label: "Austria" },
-  { label: "Azerbaijan" },
-  { label: "Bahamas" },
-  { label: "Bahrain" },
-  { label: "Bangladesh" },
-  { label: "Barbados" },
-  { label: "Belarus" },
-  { label: "Belgium" },
-  { label: "Belize" },
-  { label: "Benin" },
-  { label: "Bermuda" },
-  { label: "Bhutan" },
-  { label: "Bolivia, Plurinational State of" },
-  { label: "Bonaire, Sint Eustatius and Saba" },
-  { label: "Bosnia and Herzegovina" },
-  { label: "Botswana" },
-  { label: "Bouvet Island" },
-  { label: "Brazil" },
-  { label: "British Indian Ocean Territory" },
-  { label: "Brunei Darussalam" }
-];
+import IconButton from "@material-ui/core/IconButton";
+import SearchIcon from "@material-ui/icons/Search";
 
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps;
   return (
+    <div className='flex'>
     <TextField
       fullWidth
       InputProps={{
@@ -62,35 +28,38 @@ function renderInputComponent(inputProps) {
       }}
       {...other}
     />
+    <IconButton aria-label="Search">
+      <SearchIcon />
+    </IconButton>
+    </div>
   );
 }
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
   const matches = match(suggestion.label, query);
   const parts = parse(suggestion.label, matches);
+  console.log(suggestion);
   return (
     <MenuItem selected={isHighlighted} component="div">
+      <img src={suggestion.image} alt={suggestion.image} style={{height: '24px', width: '24px', marginRight: '10px'}} />
       <div>
         {parts.map(part => (
-          <span
-            key={part.text}
-            style={{ fontWeight: part.highlight ? 500 : 400 }}
-          >
-            {part.text}
-          </span>
+            <span key={part.text} style={{ fontWeight: part.highlight ? 600 : 400 }}>
+              {part.text}
+            </span>
         ))}
       </div>
     </MenuItem>
   );
 }
 
-function getSuggestions(value) {
+function getSuggestions(value, suggestionList) {
   const inputValue = deburr(value.trim()).toLowerCase();
   const inputLength = inputValue.length;
   let count = 0;
   return inputLength === 0
     ? []
-    : suggestions.filter(suggestion => {
+    : suggestionList.filter(suggestion => {
         const keep =
           count < 5 &&
           suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
@@ -107,7 +76,6 @@ function getSuggestionValue(suggestion) {
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: 250,
     flexGrow: 1
   },
   container: {
@@ -133,18 +101,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function IntegrationAutosuggest() {
+export default function IntegrationAutosuggest(coins) {
+  const suggestionList = []
+  coins.coins.length > 0 && coins.coins.map((coin)=>suggestionList.push({label: coin.name, image: coin.image}))
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [state, setState] = React.useState({
     single: "",
     popper: ""
   });
-
   const [stateSuggestions, setSuggestions] = React.useState([]);
 
   const handleSuggestionsFetchRequested = ({ value }) => {
-    setSuggestions(getSuggestions(value));
+    setSuggestions(getSuggestions(value, suggestionList));
   };
 
   const handleSuggestionsClearRequested = () => {
@@ -173,32 +142,8 @@ export default function IntegrationAutosuggest() {
         {...autosuggestProps}
         inputProps={{
           classes,
-          id: "react-autosuggest-simple",
-          label: "Country",
-          placeholder: "Search a country (start with a)",
-          value: state.single,
-          onChange: handleChange("single")
-        }}
-        theme={{
-          container: classes.container,
-          suggestionsContainerOpen: classes.suggestionsContainerOpen,
-          suggestionsList: classes.suggestionsList,
-          suggestion: classes.suggestion
-        }}
-        renderSuggestionsContainer={options => (
-          <Paper {...options.containerProps} square>
-            {options.children}
-          </Paper>
-        )}
-      />
-      <div className={classes.divider} />
-      <Autosuggest
-        {...autosuggestProps}
-        inputProps={{
-          classes,
           id: "react-autosuggest-popper",
-          label: "Country",
-          placeholder: "With Popper",
+          placeholder: "Seach...",
           value: state.popper,
           onChange: handleChange("popper"),
           inputRef: node => {
@@ -213,7 +158,7 @@ export default function IntegrationAutosuggest() {
           suggestion: classes.suggestion
         }}
         renderSuggestionsContainer={options => (
-          <Popper anchorEl={anchorEl} open={Boolean(options.children)}>
+          <Popper style={{zIndex: '12'}} anchorEl={anchorEl} open={Boolean(options.children)}>
             <Paper
               square
               {...options.containerProps}
