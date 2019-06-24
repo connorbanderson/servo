@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import _ from "lodash";
 import { connect } from "react-redux";
 import { addMessage, getMessages } from "./Redux/Actions/messages";
 import fire from "./fire";
@@ -37,6 +38,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import Person from '@material-ui/icons/Person';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
 
 import {
   LineChart,
@@ -62,8 +64,23 @@ class App extends Component {
     email: null,
     password: null,
     coins: [],
+    sortedCoins: null,
     isAvatarMenuOpen: false,
-    anchorEl: null
+    anchorEl: null,
+    rankingSort: 'asc',
+    nameSort: null,
+    priceSort: null,
+    oneHourSort: null,
+    oneDaySort: null,
+    sevenDaySort: null,
+    emptyFilters: {
+      rankingSort: null,
+      nameSort: null,
+      priceSort: null,
+      oneHourSort: null,
+      oneDaySort: null,
+      sevenDaySort: null
+    },
   };
 
   authListener() {
@@ -139,10 +156,109 @@ class App extends Component {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
+  handleRankingSort = () => {
+    const { rankingSort, coins, emptyFilters } = this.state
+    if (rankingSort === null) {
+      let sortedCoins = _.orderBy(coins, ['market_cap_rank'],['desc']);
+      this.setState({ ...emptyFilters, rankingSort: 'desc', sortedCoins: sortedCoins })
+    } else {
+      if  (rankingSort === 'asc') {
+        let sortedCoins = _.orderBy(coins, ['market_cap_rank'],['desc']);
+        this.setState({ ...emptyFilters, rankingSort: 'desc', sortedCoins: sortedCoins })
+      } else {
+        let sortedCoins = _.orderBy(coins, ['market_cap_rank'],['asc']);
+        this.setState({ ...emptyFilters, rankingSort: 'asc', sortedCoins: sortedCoins })
+      }
+    }
+  };
+
+  handleNameSort = () => {
+    const { nameSort, coins, emptyFilters } = this.state
+    if (nameSort === null) {
+      let sortedCoins = _.orderBy(coins, ['name'],['desc']);
+      this.setState({ ...emptyFilters, nameSort: 'desc', sortedCoins: sortedCoins })
+    } else {
+      if  (nameSort === 'asc') {
+        let sortedCoins = _.orderBy(coins, ['name'],['desc']);
+        this.setState({ ...emptyFilters, nameSort: 'desc', sortedCoins: sortedCoins })
+      } else {
+        let sortedCoins = _.orderBy(coins, ['name'],['asc']);
+        this.setState({ ...emptyFilters, nameSort: 'asc', sortedCoins: sortedCoins })
+      }
+    }
+  };
+
+  handlePriceSort = () => {
+    const { priceSort, coins, emptyFilters } = this.state
+    if (priceSort === null) {
+      let sortedCoins = _.orderBy(coins, ['current_price'],['desc']);
+      this.setState({ ...emptyFilters, priceSort: 'desc', sortedCoins: sortedCoins })
+    } else {
+      if  (priceSort === 'asc') {
+        let sortedCoins = _.orderBy(coins, ['current_price'],['desc']);
+        this.setState({ ...emptyFilters, priceSort: 'desc', sortedCoins: sortedCoins })
+      } else {
+        let sortedCoins = _.orderBy(coins, ['current_price'],['asc']);
+        this.setState({ ...emptyFilters, priceSort: 'asc', sortedCoins: sortedCoins })
+      }
+    }
+  };
+
+  handleOneHourSort = () => {
+    const { oneHourSort, coins, emptyFilters } = this.state
+    if (oneHourSort === null) {
+      let sortedCoins = _.orderBy(coins, ['price_change_percentage_1h_in_currency'],['desc']);
+      this.setState({ ...emptyFilters, oneHourSort: 'desc', sortedCoins: sortedCoins })
+    } else {
+      if  (oneHourSort === 'asc') {
+        let sortedCoins = _.orderBy(coins, ['price_change_percentage_1h_in_currency'],['desc']);
+        this.setState({ ...emptyFilters, oneHourSort: 'desc', sortedCoins: sortedCoins })
+      } else {
+        let sortedCoins = _.orderBy(coins, ['price_change_percentage_1h_in_currency'],['asc']);
+        this.setState({ ...emptyFilters, oneHourSort: 'asc', sortedCoins: sortedCoins })
+      }
+    }
+  };
+
+  handleOneDaySort = () => {
+    const { oneDaySort, coins, emptyFilters } = this.state
+    if (oneDaySort === null) {
+      let sortedCoins = _.orderBy(coins, ['price_change_percentage_24h_in_currency'],['desc']);
+      this.setState({ ...emptyFilters, oneDaySort: 'desc', sortedCoins: sortedCoins })
+    } else {
+      if  (oneDaySort === 'asc') {
+        let sortedCoins = _.orderBy(coins, ['price_change_percentage_24h_in_currency'],['desc']);
+        this.setState({ ...emptyFilters, oneDaySort: 'desc', sortedCoins: sortedCoins })
+      } else {
+        let sortedCoins = _.orderBy(coins, ['price_change_percentage_24h_in_currency'],['asc']);
+        this.setState({ ...emptyFilters, oneDaySort: 'asc', sortedCoins: sortedCoins })
+      }
+    }
+  };
+
+  handleSevenDaySort = () => {
+    const { sevenDaySort, coins, emptyFilters } = this.state
+    if (sevenDaySort === null) {
+      let sortedCoins = _.orderBy(coins, ['price_change_percentage_7d_in_currency'],['desc']);
+      this.setState({ ...emptyFilters, sevenDaySort: 'desc', sortedCoins: sortedCoins })
+    } else {
+      if  (sevenDaySort === 'asc') {
+        let sortedCoins = _.orderBy(coins, ['price_change_percentage_7d_in_currency'],['desc']);
+        this.setState({ ...emptyFilters, sevenDaySort: 'desc', sortedCoins: sortedCoins })
+      } else {
+        let sortedCoins = _.orderBy(coins, ['price_change_percentage_7d_in_currency'],['asc']);
+        this.setState({ ...emptyFilters, sevenDaySort: 'asc', sortedCoins: sortedCoins })
+      }
+    }
+  };
+
   render() {
     const { addMessage, logout } = this.props;
-    const { user, isLogin, coins, isAvatarMenuOpen, anchorEl } = this.state;
-    console.log('RENDERING!!!', this.state, this.props);
+    const { user, isLogin, coins, sortedCoins, isAvatarMenuOpen, anchorEl, rankingSort, nameSort, priceSort, oneHourSort, oneDaySort, sevenDaySort } = this.state;
+    console.log('coins', coins);
+
+    const whichCoins = sortedCoins !== null ? sortedCoins : coins;
+
     return (
       <div className="App">
         {!user ? (
@@ -181,23 +297,115 @@ class App extends Component {
               </div>
             </nav>
             <div className="dashboardInnerWrapper">
-              <Paper style={{ backgroundColor: 'white', zIndex: 2 }}>
-                <Table style={{ width: "100%" }} size="small">
-                  <TableHead>
+              <Paper className='paperTableWrapper' style={{ backgroundColor: 'white', zIndex: 2, overflow: 'hidden' }}>
+                <Table
+                  handleSort={this.handleSort}
+                  style={{ width: "100%" }}
+                  size="small"
+                >
+                  <TableHead className='customTableHead'>
                     <TableRow>
-                      <TableCell>#</TableCell>
-                      <TableCell align="left">Name</TableCell>
-                      <TableCell align="right">Price</TableCell>
-                      <TableCell align="right">1H</TableCell>
-                      <TableCell align="right">24H</TableCell>
-                      <TableCell align="right">7D</TableCell>
-                      <TableCell align="right">Available Supply</TableCell>
-                      <TableCell align="right">Market Cap</TableCell>
-                      <TableCell align="left">Past 7 Days</TableCell>
+                      <TableCell
+                        key='rankingTableCell'
+                        sortDirection={rankingSort !== null ? rankingSort === 'asc' ? 'asc' : 'desc' : false}
+                        style={{ color: 'white', fontWeight: 'bold' }}
+                      >
+                        <TableSortLabel
+                          active={rankingSort !== null}
+                          direction={rankingSort === 'asc' ? 'asc' : 'desc'}
+                          onClick={()=>this.handleRankingSort()}
+                          style={{ color: 'white', fontWeight: 'bold', fontSize: '13px' }}
+                        >
+                        #
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        key='nameTableCell'
+                        sortDirection={nameSort !== null ? nameSort === 'asc' ? 'asc' : 'desc' : false}
+                        style={{ color: 'white', fontWeight: 'bold' }}
+                        align="left"
+                        className='flexLeft'
+                      >
+                        <TableSortLabel
+                          active={nameSort !== null}
+                          direction={nameSort === 'asc' ? 'asc' : 'desc'}
+                          onClick={()=>this.handleNameSort()}
+                          style={{ color: 'white', fontWeight: 'bold', fontSize: '14px', textAlign: 'left'}}
+                        >
+                            <span style={{width: '100%', textAlign: 'left'}}>Name</span>
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        key='priceTableCell'
+                        sortDirection={priceSort !== null ? priceSort === 'asc' ? 'asc' : 'desc' : false}
+                        style={{ color: 'white', fontWeight: 'bold' }}
+                        align="left"
+                        className='flexLeft'
+                      >
+                        <TableSortLabel
+                          active={priceSort !== null}
+                          direction={priceSort === 'asc' ? 'asc' : 'desc'}
+                          onClick={()=>this.handlePriceSort()}
+                          style={{ color: 'white', fontWeight: 'bold', fontSize: '14px', textAlign: 'left'}}
+                        >
+                            <span style={{width: '100%', textAlign: 'right'}}>Price</span>
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        key='oneHourTableCell'
+                        sortDirection={oneHourSort !== null ? oneHourSort === 'asc' ? 'asc' : 'desc' : false}
+                        style={{ color: 'white', fontWeight: 'bold' }}
+                        align="left"
+                        className='flexLeft'
+                      >
+                        <TableSortLabel
+                          active={oneHourSort !== null}
+                          direction={oneHourSort === 'asc' ? 'asc' : 'desc'}
+                          onClick={()=>this.handleOneHourSort()}
+                          style={{ color: 'white', fontWeight: 'bold', fontSize: '14px', textAlign: 'left'}}
+                        >
+                            <span style={{width: '100%', textAlign: 'right'}}>1H</span>
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        key='oneDayTableCell'
+                        sortDirection={oneDaySort !== null ? oneDaySort === 'asc' ? 'asc' : 'desc' : false}
+                        style={{ color: 'white', fontWeight: 'bold' }}
+                        align="left"
+                        className='flexLeft'
+                      >
+                        <TableSortLabel
+                          active={oneDaySort !== null}
+                          direction={oneDaySort === 'asc' ? 'asc' : 'desc'}
+                          onClick={()=>this.handleOneDaySort()}
+                          style={{ color: 'white', fontWeight: 'bold', fontSize: '14px', textAlign: 'left'}}
+                        >
+                            <span style={{width: '100%', textAlign: 'right'}}>24H</span>
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        key='sevenDayTableCell'
+                        sortDirection={sevenDaySort !== null ? sevenDaySort === 'asc' ? 'asc' : 'desc' : false}
+                        style={{ color: 'white', fontWeight: 'bold' }}
+                        align="left"
+                        className='flexLeft'
+                      >
+                        <TableSortLabel
+                          active={sevenDaySort !== null}
+                          direction={sevenDaySort === 'asc' ? 'asc' : 'desc'}
+                          onClick={()=>this.handleSevenDaySort()}
+                          style={{ color: 'white', fontWeight: 'bold', fontSize: '14px', textAlign: 'left'}}
+                        >
+                            <span style={{width: '100%', textAlign: 'right'}}>7D</span>
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }} align="right">Available Supply</TableCell>
+                      <TableCell style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }} align="right">Market Cap</TableCell>
+                      <TableCell style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }} align="left">Past 7 Days</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {coins.map(coin => {
+                    {whichCoins.map(coin => {
                       const lineColor =
                         coin.price_change_percentage_7d_in_currency >= 0
                           ? "#4CAF50"
@@ -301,7 +509,7 @@ class App extends Component {
                           </TableCell>
                           <TableCell align="left">
                             <LineChart
-                              width={100}
+                              width={150}
                               height={50}
                               data={this.prepGraphData(
                                 coin.sparkline_in_7d.price
