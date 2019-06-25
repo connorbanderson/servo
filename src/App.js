@@ -310,7 +310,7 @@ class App extends Component {
                       <h2>To Da Moon</h2>
                       <div className='flex marginTS'>
                         <ArrowDropUp style={{color: '#81C784'}} />
-                        <span style={{color: '#81C784', fontSize: '22px'}}>5%</span>
+                        <span style={{color: '#81C784', fontSize: '22px'}}>{this.round(coins[1].price_change_percentage_24h_in_currency)}%</span>
                       </div>
                     </div>
                     <div className='customRadioWrapper flex marginTS'>
@@ -351,14 +351,14 @@ class App extends Component {
                   <div style={{ marginLeft: '30px' }} className='statWrapper'>
                     <div style={{flex: '0 0 auto'}} className='fullWidth flex'>
                       <img className='marginRM' src={coins[0].image} style={{height: '24px', width: '24px'}} />
-                      <span style={{color: '#81C784'}}>18%</span>
+                      <span style={{color: '#81C784'}}>{this.round(coins[0].price_change_percentage_24h_in_currency)}%</span>
                     </div>
                     <span style={{ marginTop: '10px', fontSize: '12px', opacity: '0.4' }}>Top Performer</span>
                   </div>
                   <div style={{ marginLeft: '30px' }} className='statWrapper'>
                     <div className='fullWidth flex'>
                       <img className='marginRM' src={coins[5].image} style={{height: '24px', width: '24px'}} />
-                      <span style={{color: '#e57373'}}>2%</span>
+                      <span style={{color: '#e57373'}}>{this.round(coins[5].price_change_percentage_24h_in_currency)}%</span>
                     </div>
                     <span style={{ marginTop: '10px', fontSize: '12px', opacity: '0.4' }}>Worst Performer</span>
                   </div>
@@ -487,8 +487,8 @@ class App extends Component {
                     {whichCoins.map(coin => {
                       const lineColor =
                         coin.price_change_percentage_7d_in_currency >= 0
-                          ? "#4CAF50"
-                          : "#E91E63";
+                          ? "#81C784"
+                          : "#e57373";
                       const availableSupply = coin.total_supply !== null ? (coin.circulating_supply / coin.total_supply) * 100 : 'infinity';
                       return (
                         <TableRow key={coin.name}>
