@@ -37,8 +37,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExitToApp from '@material-ui/icons/ExitToApp';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import Person from '@material-ui/icons/Person';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Radio from '@material-ui/core/Radio';
 
 import {
   LineChart,
@@ -259,9 +263,10 @@ class App extends Component {
 
     const whichCoins = sortedCoins !== null ? sortedCoins : coins;
 
+    const selectedValue = 'a'
     return (
       <div className="App">
-        {!user ? (
+        {!user || coins.length === 0 ? (
           <Login />
         ) : (
           <div className="dashboardWrapper">
@@ -297,7 +302,81 @@ class App extends Component {
               </div>
             </nav>
             <div className="dashboardInnerWrapper">
-              <Paper className='paperTableWrapper' style={{ backgroundColor: 'white', zIndex: 2, overflow: 'hidden' }}>
+
+              <Paper className='portfolioPaper'>
+                <div style={{marginBottom: '15px'}} className='flexSpaceBetweenStart'>
+                  <div className='flexColLeft'>
+                    <div className='flexLeft'>
+                      <h2>To Da Moon</h2>
+                      <div className='flex marginTS'>
+                        <ArrowDropUp style={{color: '#81C784'}} />
+                        <span style={{color: '#81C784', fontSize: '22px'}}>5%</span>
+                      </div>
+                    </div>
+                    <div className='customRadioWrapper flex marginTS'>
+                      <div className='radioButton flex'><span>1H</span></div>
+                      <div className='radioButton radioButtonActive flex'><span>24H</span></div>
+                      <div className='radioButton flex'><span>7D</span></div>
+                    </div>
+                  </div>
+
+
+                  <h1 style={{fontSize: '36px'}} className="primaryGradientText">$130,449</h1>
+                </div>
+                {coins.length > 0 &&
+                  <LineChart
+                    width={420}
+                    height={120}
+                    data={this.prepGraphData(
+                      coins[0].sparkline_in_7d.price
+                    )}
+                  >
+                    <Line
+                      type="monotone"
+                      dataKey="pv"
+                      stroke="#81C784"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <YAxis
+                      type="number"
+                      domain={["dataMin", "dataMax"]}
+                      hide={true}
+                    />
+                  </LineChart>
+                }
+                <div className='fullWidth flexRight marginTM marginBM'>
+
+
+                  <div style={{ marginLeft: '30px' }} className='statWrapper'>
+                    <div style={{flex: '0 0 auto'}} className='fullWidth flex'>
+                      <img className='marginRM' src={coins[0].image} style={{height: '24px', width: '24px'}} />
+                      <span style={{color: '#81C784'}}>18%</span>
+                    </div>
+                    <span style={{ marginTop: '10px', fontSize: '12px', opacity: '0.4' }}>Top Performer</span>
+                  </div>
+                  <div style={{ marginLeft: '30px' }} className='statWrapper'>
+                    <div className='fullWidth flex'>
+                      <img className='marginRM' src={coins[5].image} style={{height: '24px', width: '24px'}} />
+                      <span style={{color: '#e57373'}}>2%</span>
+                    </div>
+                    <span style={{ marginTop: '10px', fontSize: '12px', opacity: '0.4' }}>Worst Performer</span>
+                  </div>
+
+
+
+                </div>
+                <div className='botActionMenu flexRight'>
+                  <Button color="primary">
+                    See All
+                  </Button>
+                </div>
+              </Paper>
+
+
+
+
+              <Paper className='paperTableWrapper' style={{ backgroundColor: 'white', zIndex: 2, overflow: 'hidden', marginTop: '20px'}}>
                 <Table
                   handleSort={this.handleSort}
                   style={{ width: "100%" }}

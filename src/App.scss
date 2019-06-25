@@ -19,11 +19,26 @@ body, #root {
   align-items: center !important;
 }
 
+.flexCol{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.flexColLeft{
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
 .flexLeft{
   display: flex;
   justify-content: flex-start;
   align-items: center;
 }
+
 
 .flexRight{
   display: flex;
@@ -31,8 +46,57 @@ body, #root {
   align-items: center;
 }
 
+.flexSpaceBetween{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flexSpaceBetweenStart{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.flexSpaceAround{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
 .textLeft{
   text-align: left !important;
+}
+
+.fullWidth{
+  width: 100%;
+}
+
+.marginTM{
+  margin-top: 10px;
+}
+
+.marginTS{
+  margin-top: 5px;
+}
+
+.marginBM{
+  margin-bottom: 10px;
+}
+
+.marginLM{
+  margin-left: 10px;
+}
+
+.marginRM{
+  margin-right: 10px;
+}
+
+.primaryGradientText {
+  font-size: 72px;
+  background: -webkit-linear-gradient(45deg, #E94057 30%, #F27121);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 
@@ -55,6 +119,75 @@ body, #root {
     right: 0;
     position: fixed;
     z-index: 1;
+  }
+}
+
+.portfolioPaper{
+  position: relative;
+  padding: 10px 20px;
+  margin: 20px;
+  background-color: white;
+  z-index: 2;
+  h1{
+    margin: 0px;
+  }
+  h2{
+    margin: 0px;
+    font-size: 22px;
+    margin-right: 12px;
+  }
+  h4{
+    color: #81C784;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0px;
+  }
+  .arrowIcon{
+    margin-top: 4px;
+    color: #81C784;
+    height: 18px;
+    width: 18px;
+  }
+  .graphTitleText{
+    position: absolute;
+    top: 60px;
+    left: 24px;
+    font-size: 24px;
+  }
+  .customRadioWrapper{
+    height: 24px;
+    width: 100%;
+    max-width: 103px;
+    border-radius: 4px;
+    border: 1px solid #EFEFEF;
+    font-size: 12px;
+    overflow: hidden;
+    .radioButton{
+      height: 100%;
+      width: 34px;
+      background-color: white;
+      color: black;
+      cursor: pointer;
+      transition: all 0.5s cubic-bezier(.25,.8,.25,1);
+      &:hover{
+        background-color: #FAFAFA;
+      }
+    }
+    .radioButtonActive{
+      background-color: #fcebee;
+      &:hover{
+        background-color: rgba(252, 235, 238, 0.65);
+      }
+      span{
+        background: -webkit-linear-gradient(45deg, #E94057 30%, #F27121);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+  }
+  .botActionMenu{
+    border-top: 1px solid #efefef;
+    padding-top: 8px;
   }
 }
 
