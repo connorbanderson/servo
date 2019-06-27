@@ -319,8 +319,6 @@ class App extends Component {
                       <div className='radioButton flex'><span>7D</span></div>
                     </div>
                   </div>
-
-
                   <h1 style={{fontSize: '36px'}} className="primaryGradientText">$130,449</h1>
                 </div>
                 {coins.length > 0 &&

@@ -1,0 +1,30 @@
+.portfolioPageWrapper{
+  position: relative;
+  height: 100vh;
+  min-height: 800px;
+  width: 100%;
+  padding-top: 80px;
+  .portfolioInnerWrapper{
+    position: relative;
+    height: auto;
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
+
+.portfolioTopPaper, .portfolio7DayGraphPaper, .portfolioProfitGraphPaper{
+  margin: 10px;
+  padding: 20px;
+}
+
+.portfolioTopPaper{
+  width: 100%;
+}
+
+.portfolio7DayGraphPaper, .portfolioProfitGraphPaper{
+  width: calc(50% - 20px);
+}

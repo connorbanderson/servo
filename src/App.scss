@@ -33,6 +33,14 @@ body, #root {
   flex-direction: column;
 }
 
+.flexColStart{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+}
+
+
 .flexLeft{
   display: flex;
   justify-content: flex-start;
@@ -62,6 +70,10 @@ body, #root {
   display: flex;
   justify-content: space-around;
   align-items: center;
+}
+
+.wrap{
+  flex-wrap: wrap;
 }
 
 .textLeft{

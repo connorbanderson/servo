@@ -1,0 +1,98 @@
+// Frontend Lib Imports
+import React, { Component } from "react";
+import { connect } from "react-redux";
+
+// Component Imports
+import TextField from "@material-ui/core/TextField";
+import IconButton from "@material-ui/core/IconButton";
+import Avatar from "@material-ui/core/Avatar";
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ExitToApp from '@material-ui/icons/ExitToApp';
+import Person from '@material-ui/icons/Person';
+
+//Redux
+import { logout } from "../../Redux/Actions/auth";
+
+// Style Imports
+import "./Navbar.scss";
+
+// Asset Imports
+import logo from "../../logo.svg";
+
+class Navbar extends Component {
+  state = {
+    anchorEl: null,
+  }
+
+  handleClose = () => {
+     this.setState({anchorEl: null})
+   }
+   handleClick = (e) => {
+      this.setState({anchorEl: e.currentTarget})
+    }
+
+  render() {
+    const { anchorEl } = this.state;
+    return (
+      <nav className="dashboardNavbar">
+        <div className="navbarInnerWrapper">
+          <div className="lhs">
+            <img
+              src={logo}
+              alt="navbar logo"
+              style={{ height: "32px", width: "32px" }}
+            />
+          </div>
+          <div className="middle">
+          </div>
+          <div className="rhs flexRight">
+            <IconButton
+              aria-label="Delete"
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+              onClick={e => this.handleClick(e)}
+              onMouseOver={e => this.handleClick(e)}
+            >
+              <Avatar
+                style={{ height: "32px", width: "32px" }}
+                alt="Remy Sharp"
+                src="https://scontent.fyyc4-1.fna.fbcdn.net/v/t1.15752-9/53270755_401825197043838_4318937078982246400_n.png?_nc_cat=105&_nc_ht=scontent.fyyc4-1.fna&oh=9e34adadc4dcb7d326ef65afb4b902d7&oe=5D893ECD"
+              />
+              <ExpandMore style={{ marginLeft: "3px" }} />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              id="simple-menu"
+              open={Boolean(anchorEl)}
+              onClose={() => this.handleClose()}
+              style={{ marginTop: "44px" }}
+              onMouseLeave={() => this.handleClose()}
+            >
+              <MenuItem onClick={() => this.handleClose()}>
+                <Person style={{ marginRight: "5px" }} />
+                Profile
+              </MenuItem>
+              <MenuItem onClick={() => [this.handleClose(), logout()]}>
+                <ExitToApp style={{ marginRight: "5px" }} />
+                Logout
+              </MenuItem>
+            </Menu>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+}
+
+const mapStateToProps = state => ({});
+
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout())
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Navbar);

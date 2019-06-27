@@ -1,14 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import configureStore from "./Redux/store";
 import "./styles/global.scss";
 import App from "./App";
+import Portfolio from "./Routes/Auth/Portfolio/Portfolio";
+
 import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
   <Provider store={configureStore()}>
-    <App />
+    <Router>
+      <Route exact path="/" component={App} />
+      <Route path="/portfolio" component={Portfolio} />
+    </Router>
   </Provider>,
   document.getElementById("root")
 );
