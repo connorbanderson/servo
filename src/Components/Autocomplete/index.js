@@ -9,28 +9,28 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Popper from "@material-ui/core/Popper";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
+import AddIcon from "@material-ui/icons/Add";
 
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps;
   return (
-    <div className='flex'>
-    <TextField
-      fullWidth
-      InputProps={{
-        inputRef: node => {
-          ref(node);
-          inputRef(node);
-        },
-        classes: {
-          input: classes.input
-        }
-      }}
-      {...other}
-    />
-    <IconButton aria-label="Search">
-      <SearchIcon />
-    </IconButton>
+    <div className="flex">
+      <TextField
+        fullWidth
+        InputProps={{
+          inputRef: node => {
+            ref(node);
+            inputRef(node);
+          },
+          classes: {
+            input: classes.input
+          }
+        }}
+        {...other}
+      />
+      <IconButton style={{ color: "red" }} aria-label="Add">
+        <AddIcon />
+      </IconButton>
     </div>
   );
 }
@@ -38,15 +38,21 @@ function renderInputComponent(inputProps) {
 function renderSuggestion(suggestion, { query, isHighlighted }) {
   const matches = match(suggestion.label, query);
   const parts = parse(suggestion.label, matches);
-  console.log(suggestion);
   return (
     <MenuItem selected={isHighlighted} component="div">
-      <img src={suggestion.image} alt={suggestion.image} style={{height: '24px', width: '24px', marginRight: '10px'}} />
+      <img
+        src={suggestion.image}
+        alt={suggestion.image}
+        style={{ height: "24px", width: "24px", marginRight: "10px" }}
+      />
       <div>
         {parts.map(part => (
-            <span key={part.text} style={{ fontWeight: part.highlight ? 600 : 400 }}>
-              {part.text}
-            </span>
+          <span
+            key={part.text}
+            style={{ fontWeight: part.highlight ? 600 : 400 }}
+          >
+            {part.text}
+          </span>
         ))}
       </div>
     </MenuItem>
@@ -83,7 +89,7 @@ const useStyles = makeStyles(theme => ({
   },
   suggestionsContainerOpen: {
     position: "absolute",
-    zIndex: 1,
+    zIndex: 999,
     marginTop: theme.spacing(1),
     left: 0,
     right: 0
@@ -101,9 +107,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function IntegrationAutosuggest(coins) {
-  const suggestionList = []
-  coins.coins.length > 0 && coins.coins.map((coin)=>suggestionList.push({label: coin.name, image: coin.image}))
+export default function IntegrationAutosuggest({ coins, onAdd }) {
+  const suggestionList = [];
+  coins.length > 0 &&
+    coins.map(coin =>
+      suggestionList.push({ id: coin.id, label: coin.name, image: coin.image })
+    );
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [state, setState] = React.useState({
@@ -137,15 +146,26 @@ export default function IntegrationAutosuggest(coins) {
   };
 
   return (
-    <div className={classes.root}>
+    <div
+      onKeyDown={e =>
+        e.key === "Enter" &&
+        autosuggestProps.suggestions.length > 0 && [
+          onAdd(autosuggestProps.suggestions[0].id),
+          e.preventDefault(),
+          setState({ ...state, popper: "" }),
+        ]
+      }
+      className={classes.root}
+    >
       <Autosuggest
         {...autosuggestProps}
         inputProps={{
           classes,
           id: "react-autosuggest-popper",
-          placeholder: "Seach...",
+          placeholder: "Seach For Crypto To Add...",
           value: state.popper,
           onChange: handleChange("popper"),
+          onSubmit: onAdd,
           inputRef: node => {
             setAnchorEl(node);
           },
@@ -158,11 +178,26 @@ export default function IntegrationAutosuggest(coins) {
           suggestion: classes.suggestion
         }}
         renderSuggestionsContainer={options => (
-          <Popper style={{zIndex: '12'}} anchorEl={anchorEl} open={Boolean(options.children)}>
+          <Popper
+            style={{ zIndex: "999" }}
+            anchorEl={anchorEl}
+            open={Boolean(options.children)}
+          >
             <Paper
+              onClick={() => [
+                onAdd(
+                  options.children.props.items[
+                    options.children.props.highlightedItemIndex
+                  ].id
+                ),
+                setState({ ...state, popper: "" })
+              ]}
               square
               {...options.containerProps}
-              style={{ width: anchorEl ? anchorEl.clientWidth : undefined }}
+              style={{
+                width: anchorEl ? anchorEl.clientWidth : undefined,
+                zIndex: "999"
+              }}
             >
               {options.children}
             </Paper>

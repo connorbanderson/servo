@@ -26,6 +26,8 @@ class Input extends Component {
       error,
       helperText,
       clearError,
+      value,
+      autoFocus,
     } = this.props;
     return (
       <form
@@ -41,6 +43,8 @@ class Input extends Component {
           type={type}
           error={error}
           helperText={helperText}
+          value={value}
+          autoFocus={autoFocus}
         />
       </form>
     );
@@ -51,7 +55,9 @@ Input.defaultProps = {
   onChange: () => null,
   type: null,
   label: "no label",
-  handleSubmit: e => e.preventDefault()
+  handleSubmit: e => e.preventDefault(),
+  value: null,
+  autoFocus: false,
 };
 
 export default Input;

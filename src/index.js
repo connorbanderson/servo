@@ -9,8 +9,13 @@ import Portfolio from "./Routes/Auth/Portfolio/Portfolio";
 
 import * as serviceWorker from "./serviceWorker";
 
+const store = configureStore()
+
+const user = store.getState('auth')
+console.log('user', user);
+
 ReactDOM.render(
-  <Provider store={configureStore()}>
+  <Provider store={store}>
     <Router>
       <Route exact path="/" component={App} />
       <Route path="/portfolio" component={Portfolio} />

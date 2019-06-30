@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
 import { addMessage, getMessages } from "./Redux/Actions/messages";
+import { authListener } from "./Redux/Actions/auth";
 import fire from "./fire";
 import firebase from "firebase";
 import "./App.scss";
@@ -58,8 +59,9 @@ import logo from "./logo.svg";
 
 class App extends Component {
   componentWillMount() {
+    const { authListener } = this.props;
     this.getCoins();
-    this.authListener();
+    authListener();
   }
 
   state = {
@@ -625,6 +627,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   addMessage: payload => dispatch(addMessage(payload)),
+  authListener: payload => dispatch(authListener(payload)),
   logout: () => dispatch(logout())
 });
 

@@ -55,9 +55,15 @@ export default (state = default_state, action) => {
         loading: false,
         signUpError: null
       };
-    case "LOGOUT":
+    case "SIGN_UP_REQUEST":
       return {
-        default_state
+        ...state,
+        loading: true
+      };
+    case "LOGIN_SUCCESS":
+      return {
+        ...state,
+        user: action.payload
       };
     default:
       return state;

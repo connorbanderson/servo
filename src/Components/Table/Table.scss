@@ -1,0 +1,11 @@
+.paperTableWrapper{
+  background-color: white;
+  z-index: 2;
+  overflow: hidden;
+  margin-top: 20px;
+  .customTableHead{
+    background: #8E2DE2;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(45deg, #E94057 30%, #F27121 90%);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(45deg, #E94057 30%, #F27121 90%);
+  }
+}

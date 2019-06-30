@@ -337,3 +337,9 @@ body, #root {
   cursor: pointer;
   margin: 5px;
 }
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
