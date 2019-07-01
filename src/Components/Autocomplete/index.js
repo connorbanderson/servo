@@ -12,10 +12,12 @@ import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 
 function renderInputComponent(inputProps) {
-  const { classes, inputRef = () => {}, ref, ...other } = inputProps;
+  const { classes, inputRef = () => {}, ref, ...other } = inputProps
+  console.log(inputProps);
   return (
     <div className="flex">
       <TextField
+        autoFocus={true}
         fullWidth
         InputProps={{
           inputRef: node => {
@@ -28,7 +30,7 @@ function renderInputComponent(inputProps) {
         }}
         {...other}
       />
-      <IconButton style={{ color: "red" }} aria-label="Add">
+      <IconButton disabled={inputProps.value === ""} aria-label="Add">
         <AddIcon />
       </IconButton>
     </div>

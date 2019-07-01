@@ -6,12 +6,13 @@ import { connect } from "react-redux";
 import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import Avatar from "@material-ui/core/Avatar";
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ExitToApp from '@material-ui/icons/ExitToApp';
-import Person from '@material-ui/icons/Person';
-
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import ExitToApp from "@material-ui/icons/ExitToApp";
+import Person from "@material-ui/icons/Person";
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 //Redux
 import { logout } from "../../Redux/Actions/auth";
 
@@ -23,18 +24,20 @@ import logo from "../../logo.svg";
 
 class Navbar extends Component {
   state = {
-    anchorEl: null,
-  }
+    anchorEl: null
+  };
 
   handleClose = () => {
-     this.setState({anchorEl: null})
-   }
-   handleClick = (e) => {
-      this.setState({anchorEl: e.currentTarget})
-    }
+    this.setState({ anchorEl: null });
+  };
+  handleClick = e => {
+    this.setState({ anchorEl: e.currentTarget });
+  };
 
   render() {
     const { anchorEl } = this.state;
+    const { user, logout } = this.props;
+    console.log("user..", user);
     return (
       <nav className="dashboardNavbar">
         <div className="navbarInnerWrapper">
@@ -45,40 +48,29 @@ class Navbar extends Component {
               style={{ height: "32px", width: "32px" }}
             />
           </div>
-          <div className="middle">
-          </div>
+          <div className="middle" />
           <div className="rhs flexRight">
-            <IconButton
-              aria-label="Delete"
-              aria-controls="simple-menu"
-              aria-haspopup="true"
-              onClick={e => this.handleClick(e)}
-              onMouseOver={e => this.handleClick(e)}
-            >
+            {user !== null &&
+              <>
               <Avatar
                 style={{ height: "32px", width: "32px" }}
                 alt="Remy Sharp"
                 src="https://scontent.fyyc4-1.fna.fbcdn.net/v/t1.15752-9/53270755_401825197043838_4318937078982246400_n.png?_nc_cat=105&_nc_ht=scontent.fyyc4-1.fna&oh=9e34adadc4dcb7d326ef65afb4b902d7&oe=5D893ECD"
               />
-              <ExpandMore style={{ marginLeft: "3px" }} />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              id="simple-menu"
-              open={Boolean(anchorEl)}
-              onClose={() => this.handleClose()}
-              style={{ marginTop: "44px" }}
-              onMouseLeave={() => this.handleClose()}
-            >
-              <MenuItem onClick={() => this.handleClose()}>
-                <Person style={{ marginRight: "5px" }} />
-                Profile
-              </MenuItem>
-              <MenuItem onClick={() => [this.handleClose(), logout()]}>
-                <ExitToApp style={{ marginRight: "5px" }} />
-                Logout
-              </MenuItem>
-            </Menu>
+              <span style={{marginLeft: '5px', marginRight: '25px'}}>
+                {user.displayName !== null ? user.displayName : user.email}
+              </span>
+              <Button
+                className="squareButton"
+                variant="contained"
+                size="small"
+                onClick={() => logout()}
+                style={{ backgroundColor: "white", width: "32px" }}
+              >
+                <ExitToApp style={{}} />
+              </Button>
+              </>
+            }
           </div>
         </div>
       </nav>

@@ -49,6 +49,19 @@ export const addCoinToPortfolio = ({ accountKey, coinInfo }) => {
     });
 };
 
+export const deleteCoinFromPortfolio = ({ accountKey, coinKey }) => {
+  console.log('deleteCoinFromPortfolio ACTION', accountKey, coinKey);
+  const portfolioKey = 1;
+    fire
+      .database()
+      .ref(`${accountKey}/portfolios/${portfolioKey}/coins`)
+      .child(coinKey)
+      .remove()
+      .catch(error => {
+        console.log("Delete COIN ERROR!@!!");
+    });
+}
+
 export const editPortfolioCoin = ({ accountKey, coinKey, updatedObject }) => {
   console.log('editPortfolioCoin ACTION', updatedObject);
   const portfolioKey = 1;

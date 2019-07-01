@@ -6,7 +6,8 @@ import { authListener } from "../../../Redux/Actions/auth";
 import {
   portfolioListner,
   addCoinToPortfolio,
-  editPortfolioCoin
+  editPortfolioCoin,
+  deleteCoinFromPortfolio
 } from "../../../Redux/Actions/portfolios";
 import _ from "lodash";
 
@@ -17,6 +18,7 @@ import GradientPrice from "../../../Components/GradientPrice";
 import GradientButton from "../../../Components/GradientButton";
 import Autocomplete from "../../../Components/Autocomplete";
 import Input from "../../../Components/Input/input.js";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import Paper from "@material-ui/core/Paper";
 import Modal from "@material-ui/core/Modal";
@@ -33,7 +35,10 @@ import {
   Tooltip,
   Legend
 } from "recharts";
-
+import ArrowDropUp from "@material-ui/icons/ArrowDropUp";
+import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 // Style
 import "./Portfolio.scss";
 import "../../../index.scss";
@@ -56,6 +61,17 @@ class Portfolio extends Component {
     amountInvested: 0,
     editAmountPurchased: null,
     editAmountInvested: null
+  };
+
+  commarize = number => {
+    if (number >= 1e3) {
+      var units = ["k", "M", "B", "T"];
+      let unit = Math.floor((number.toFixed(0).length - 1) / 3) * 3;
+      var num = (number / ("1e" + unit)).toFixed(2);
+      var unitname = units[Math.floor(unit / 3) - 1];
+      return num + unitname;
+    }
+    return number.toLocaleString();
   };
 
   handleUpdateAmountPurchased = amountPurchased => {
@@ -174,6 +190,16 @@ class Portfolio extends Component {
     editPortfolioCoin(payload);
   };
 
+  handleDeleteCoinFromPortfolio = () => {
+    const { coinToEdit } = this.state;
+    const { user } = this.props;
+    const payload = {
+      accountKey: user.uid,
+      coinKey: coinToEdit.portfolioId
+    };
+    deleteCoinFromPortfolio(payload);
+  };
+
   generatePortfolioTable = portfolio => {
     const { coins } = this.state;
     let payload = [];
@@ -202,6 +228,91 @@ class Portfolio extends Component {
     return payload;
   };
 
+  generateBarChartData = portfolio => {
+    const { coins } = this.state;
+    const payload = [];
+    if (portfolio === undefined) return [];
+    const portfolioKeys = Object.keys(portfolio.coins);
+    portfolioKeys.map(portfolioId => {
+      const investment = portfolio.coins[portfolioId];
+      const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
+      const profit =
+        currentCoin.current_price * investment.amountPurchased -
+        investment.amountInvested;
+      payload.push({
+        name: currentCoin.name,
+        investment: investment.amountInvested,
+        profit: profit,
+        total: profit + investment.amountInvested
+      });
+    });
+    return _.orderBy(payload, "total", "desc");
+  };
+
+  generatePerformanceStats = (portfolio, timeFrame) => {
+    const { coins } = this.state;
+    let performancePercentage = 0;
+    const totalHoldings = this.calculateHoldings(portfolio);
+    if (portfolio === undefined) return [];
+    const portfolioKeys = Object.keys(portfolio.coins);
+    portfolioKeys.map(portfolioId => {
+      const investment = portfolio.coins[portfolioId];
+      const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
+      const holdinsOfThisCoins =
+        currentCoin.current_price * investment.amountPurchased;
+      performancePercentage +=
+        (holdinsOfThisCoins / totalHoldings) * currentCoin[timeFrame];
+    });
+    return this.round(performancePercentage);
+  };
+
+  calculateHoldings = portfolio => {
+    const { coins } = this.state;
+    let holdings = 0;
+    if (portfolio === undefined) return [];
+    const portfolioKeys = Object.keys(portfolio.coins);
+    portfolioKeys.map(portfolioId => {
+      const investment = portfolio.coins[portfolioId];
+      const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
+      holdings += currentCoin.current_price * investment.amountPurchased;
+    });
+    return holdings;
+  };
+
+  round = number => {
+    if (number === null) return number;
+    if (number > 1) {
+      return (Math.round(number * 100) / 100).toFixed(2);
+    } else {
+      return number.toFixed(2);
+    }
+  };
+
+  generateSevenDayLineChartData = portfolio => {
+    const { coins } = this.state;
+    const payload = [];
+    if (portfolio === undefined) return [];
+    const portfolioKeys = Object.keys(portfolio.coins);
+    const sparkLineList = [];
+    portfolioKeys.map(portfolioId => {
+      const sparkline = [];
+      const investment = portfolio.coins[portfolioId];
+      const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
+      currentCoin.sparkline_in_7d.price.map(price =>
+        sparkline.push(price * investment.amountPurchased)
+      );
+      console.log("new sparkline...", sparkline);
+      sparkLineList.push(sparkline);
+    });
+    console.log("sparkLineList", sparkLineList);
+    sparkLineList[0].map((item, index) => {
+      let priceSum = 0;
+      sparkLineList.map(sparkline => (priceSum += sparkline[index]));
+      payload.push({ "Total Holdings": this.round(priceSum), "Date": this.round(priceSum) });
+    });
+    return payload;
+  };
+
   render() {
     const { portfolios, user, portfolioListner } = this.props;
     const {
@@ -216,19 +327,64 @@ class Portfolio extends Component {
       editAmountPurchased,
       editAmountInvested
     } = this.state;
-    const barChartData = this.prepBarGraphData(coins);
     let userCoinTableList = [];
+    let sevenDayPriceData = [];
+    let barChartData = [];
+    let oneHourPerformance = 0;
+    let oneDayPerformance = 0;
+    let sevenDayPerformance = 0;
+    let holdings = 0;
     if (user !== null && portfolios === null) {
       portfolioListner(user.uid);
     }
     if (user !== null && portfolios !== null && coins.length > 0) {
       userCoinTableList = this.generatePortfolioTable(portfolios[1]);
+      barChartData = this.generateBarChartData(portfolios[1]);
+      oneHourPerformance = this.generatePerformanceStats(
+        portfolios[1],
+        "price_change_percentage_1h_in_currency"
+      );
+      oneDayPerformance = this.generatePerformanceStats(
+        portfolios[1],
+        "price_change_percentage_24h_in_currency"
+      );
+      sevenDayPerformance = this.generatePerformanceStats(
+        portfolios[1],
+        "price_change_percentage_7d_in_currency"
+      );
+      holdings = this.commarize(this.calculateHoldings(portfolios[1]));
+      sevenDayPriceData = this.generateSevenDayLineChartData(portfolios[1]);
+      console.log(sevenDayPriceData);
+      console.log(coins[71]);
     }
     return (
       <div className="portfolioPageWrapper flexColStart">
-        <Navbar />
+        <Navbar user={user} />
         <div className="portfolioInnerWrapper">
-          <div className="fullWidth flexRight">
+          <div
+            style={{ margin: "0 10px" }}
+            className="fullWidth flexSpaceBetween"
+          >
+            <ButtonGroup
+              className="customButtonGroup"
+              variant="contained"
+              size="small"
+              aria-label="Small contained button group"
+            >
+              <Button
+                className="currencyButtonSelected"
+                style={{ backgroundColor: "white" }}
+              >
+                USD
+              </Button>
+              <Button
+                disabled
+                className="currencyButton"
+                style={{ backgroundColor: "white" }}
+              >
+                CAD
+              </Button>
+            </ButtonGroup>
             <div style={{ width: "300px", paddingBottom: "10px" }}>
               <Autocomplete
                 style={{ position: "relative", zIndex: 99 }}
@@ -237,75 +393,127 @@ class Portfolio extends Component {
               />
             </div>
           </div>
-          {userCoinTableList.length > 0 && (
-            <Table
-              handleEdit={(coinToEdit, portfolioId) =>
-                this.toggleEditModal(coinToEdit)
-              }
-              data={userCoinTableList}
-              dataDisplayKeys={{
-                market_cap_rank: false,
-                name: true,
-                current_price: true,
-                price_change_percentage_1h_in_currency: true,
-                price_change_percentage_24h_in_currency: true,
-                price_change_percentage_7d_in_currency: false,
-                circulating_supply: false,
-                market_cap: false,
-                sparkline_in_7d: true,
-                roi: true,
-                holdings: true,
-                amountPurchased: true,
-                amountInvested: true,
-                edit: true
-              }}
-              presetFilters={{
-                rankingSortDirection: null,
-                nameSortDirection: null,
-                priceSortDirection: null,
-                oneHourSortDirection: null,
-                oneDaySortDirection: null,
-                sevenDaySortDirection: null,
-                holdingsSortDirection: true,
-                roiSortDirection: null,
-                amountInvestedSortDirection: null,
-                amountPurchasedSortDirection: null
-              }}
-            />
-          )}
-          <Paper className="portfolioTopPaper flexSpaceBetween">
-            <div className="lhs">
-              <h1>To Da Moon</h1>
-              <div className="priceWrapper">
-                <span>uparrow</span>
-                <span>5.04%</span>
-              </div>
-              <h2>$23,444</h2>
-              <GradientPrice
-                price={coins.length > 0 ? coins[0].current_price : 0}
-              />
-            </div>
 
-            <div className="rhs flex">
-              <h3>Top Performer</h3>
-              <h3>Worst Performer</h3>
-              <h3>Most Volume</h3>
-              <h3>MktCap / Volume</h3>
-            </div>
-          </Paper>
+          {coins.length > 0 && (
+            <Paper className="portfolioTopPaper flexSpaceBetween">
+              <div style={{ width: "25%" }} className="flexLeft">
+                <h1
+                  className="primaryGradientText"
+                  style={{ marginRight: "25px", fontSize: "36px" }}
+                >
+                  To Da Moon
+                </h1>
+              </div>
+              <div className="flex">
+                <div
+                  style={{ marginLeft: "25px", marginRight: "25px" }}
+                  className="statWrapper"
+                >
+                  <div className="fullWidth flex">
+                    {oneHourPerformance >= 0 ? (
+                      <ArrowDropUp style={{ color: "#81C784" }} />
+                    ) : (
+                      <ArrowDropDown style={{ color: "red" }} />
+                    )}
+                    <span
+                      style={{
+                        color: oneHourPerformance >= 0 ? "#81C784" : "red",
+                        fontSize: "20px"
+                      }}
+                    >
+                      {oneHourPerformance}%
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      marginTop: "10px",
+                      fontSize: "12px",
+                      opacity: "0.4"
+                    }}
+                  >
+                    1H Performance
+                  </span>
+                </div>
+                <div
+                  style={{ marginLeft: "25px", marginRight: "25px" }}
+                  className="statWrapper"
+                >
+                  <div className="fullWidth flex">
+                    {oneDayPerformance >= 0 ? (
+                      <ArrowDropUp style={{ color: "#81C784" }} />
+                    ) : (
+                      <ArrowDropDown style={{ color: "red" }} />
+                    )}
+                    <span
+                      style={{
+                        color: oneDayPerformance >= 0 ? "#81C784" : "red",
+                        fontSize: "20px"
+                      }}
+                    >
+                      {oneDayPerformance}%
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      marginTop: "10px",
+                      fontSize: "12px",
+                      opacity: "0.4"
+                    }}
+                  >
+                    24H Performance
+                  </span>
+                </div>
+                <div
+                  style={{ marginLeft: "25px", marginRight: "25px" }}
+                  className="statWrapper"
+                >
+                  <div className="fullWidth flex">
+                    {sevenDayPerformance >= 0 ? (
+                      <ArrowDropUp style={{ color: "#81C784" }} />
+                    ) : (
+                      <ArrowDropDown style={{ color: "red" }} />
+                    )}
+                    <span
+                      style={{
+                        color: sevenDayPerformance >= 0 ? "#81C784" : "red",
+                        fontSize: "20px"
+                      }}
+                    >
+                      {sevenDayPerformance}%
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      marginTop: "10px",
+                      fontSize: "12px",
+                      opacity: "0.4"
+                    }}
+                  >
+                    7D Performance
+                  </span>
+                </div>
+              </div>
+              <div style={{ width: "25%" }} className="flexRight">
+                <GradientPrice price={holdings} />
+              </div>
+            </Paper>
+          )}
 
           <Paper className="portfolio7DayGraphPaper">
-            {coins.length > 0 ? (
-              <ResponsiveContainer width="100%" height={500}>
-                <LineChart
-                  width={"100%"}
-                  height={500}
-                  data={this.prepGraphData(coins[0].sparkline_in_7d.price)}
-                >
+            <span className='sevenDayTitle'>Past 7 Days</span>
+            {coins.length > 0 && sevenDayPriceData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart width={"100%"} height={250} data={sevenDayPriceData}>
                   <Line
                     type="monotone"
-                    dataKey="pv"
-                    stroke="#81C784"
+                    dataKey="Total Holdings"
+                    stroke={
+                      sevenDayPriceData[sevenDayPriceData.length - 1][
+                        "Total Holdings"
+                      ] >= sevenDayPriceData[0]["Total Holdings"]
+                        ? "#81C784"
+                        : "red"
+                    }
                     strokeWidth={2}
                     dot={false}
                   />
@@ -313,6 +521,15 @@ class Portfolio extends Component {
                     type="number"
                     domain={["dataMin", "dataMax"]}
                     hide={true}
+                  />
+                  <XAxis
+                    type="category"
+                    hide={true}
+                  />
+                  <Tooltip
+                    formatter={(value, name, props) => {
+                      return `$${this.commarize(parseInt(props.payload['Total Holdings']))}`
+                    }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -323,9 +540,9 @@ class Portfolio extends Component {
 
           <Paper className="portfolioProfitGraphPaper">
             {coins.length > 0 ? (
-              <ResponsiveContainer width="100%" height={500}>
+              <ResponsiveContainer width="100%" height={250}>
                 <BarChart
-                  height={500}
+                  height={250}
                   data={barChartData}
                   margin={{
                     top: 20,
@@ -367,6 +584,44 @@ class Portfolio extends Component {
               <span>Loading</span>
             )}
           </Paper>
+          {userCoinTableList.length > 0 && (
+            <div style={{ marginTop: "10px", marginBottom: "10px" }}>
+              <Table
+                handleEdit={(coinToEdit, portfolioId) =>
+                  this.toggleEditModal(coinToEdit)
+                }
+                data={userCoinTableList}
+                dataDisplayKeys={{
+                  market_cap_rank: false,
+                  name: true,
+                  current_price: true,
+                  price_change_percentage_1h_in_currency: true,
+                  price_change_percentage_24h_in_currency: true,
+                  price_change_percentage_7d_in_currency: true,
+                  circulating_supply: false,
+                  market_cap: false,
+                  sparkline_in_7d: true,
+                  roi: true,
+                  holdings: true,
+                  amountPurchased: true,
+                  amountInvested: true,
+                  edit: true
+                }}
+                presetFilters={{
+                  rankingSortDirection: null,
+                  nameSortDirection: null,
+                  priceSortDirection: null,
+                  oneHourSortDirection: null,
+                  oneDaySortDirection: null,
+                  sevenDaySortDirection: null,
+                  holdingsSortDirection: "desc",
+                  roiSortDirection: null,
+                  amountInvestedSortDirection: null,
+                  amountPurchasedSortDirection: null
+                }}
+              />
+            </div>
+          )}
         </div>
         <Modal
           aria-labelledby="simple-modal-title"
@@ -484,6 +739,17 @@ class Portfolio extends Component {
                 error={null}
               />
               <div className="fullWidth flexRight">
+                <Button
+                  onClick={() => [
+                    this.handleDeleteCoinFromPortfolio(),
+                    this.toggleEditModal()
+                  ]}
+                  variant="outlined"
+                  color="secondary"
+                >
+                  Delete
+                  <DeleteIcon style={{marginLeft: '5px'}} />
+                </Button>
                 <GradientButton
                   onClick={() => this.handleEditCoinPortfolio()}
                   variant="contained"
@@ -511,6 +777,8 @@ const mapDispatchToProps = dispatch => ({
   authListener: payload => dispatch(authListener(payload)),
   addCoinToPortfolio: payload => dispatch(addCoinToPortfolio(payload)),
   editPortfolioCoin: payload => dispatch(editPortfolioCoin(payload)),
+  deleteCoinFromPortfolio: payload =>
+    dispatch(deleteCoinFromPortfolio(payload)),
   portfolioListner: payload => dispatch(portfolioListner(payload))
 });
 

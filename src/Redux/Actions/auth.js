@@ -30,6 +30,7 @@ export const authListener = () => dispatch => {
 // **  Firebase Actions - One-way firebase calls without any dispatch's directly triggered**
 
 export const logout = () => dispatch => {
+  console.log('CALLING LOGOIUT');
   fire.auth().signOut();
 };
 

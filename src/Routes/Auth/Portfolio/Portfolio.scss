@@ -8,26 +8,52 @@
     position: relative;
     height: auto;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1250px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
+    margin-bottom: 30px
+  }
+}
+
+.customButtonGroup{
+  .currencyButton{
+
+  }
+  .currencyButtonSelected{
+    color: white;
+    background: -webkit-linear-gradient(45deg, #E94057 30%, #F27121);
   }
 }
 
 .portfolioTopPaper, .portfolio7DayGraphPaper, .portfolioProfitGraphPaper{
   margin: 10px;
   padding: 20px;
+  h1{
+    margin: 0;
+  }
 }
 
 .portfolioTopPaper{
   width: 100%;
+  padding: 20px 40px;
 }
 
 .portfolio7DayGraphPaper, .portfolioProfitGraphPaper{
+  position: relative;
   width: calc(50% - 20px);
+  .sevenDayTitle{
+    position: absolute;
+    font-size: 18px;
+    opacity: 0.3;
+    font-weight: bold;
+    top: 20px;
+    left: 40px;
+  }
 }
+
+
 
 
 .modalContainer{
