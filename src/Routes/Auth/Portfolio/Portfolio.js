@@ -10,11 +10,16 @@ import {
   editPortfolioCoin,
   deleteCoinFromPortfolio
 } from "../../../Redux/Actions/portfolios";
-import {
-  fetchTop250
-} from "../../../Redux/Actions/coins";
+import { fetchTop250 } from "../../../Redux/Actions/coins";
 import _ from "lodash";
-
+import {
+  round,
+  calculateHoldings,
+  generateSevenDayLineChartData,
+  generatePerformanceStats,
+  commarize,
+  styleRedGreen
+} from "../../../utils";
 // Components
 import Navbar from "../../../Components/Navbar";
 import Table from "../../../Components/Table";
@@ -50,35 +55,32 @@ import "./Portfolio.scss";
 import "../../../index.scss";
 
 class Portfolio extends Component {
-
   componentWillMount() {
-    const { authListener, portfolioListner, user, match, fetchTop250 } = this.props;
+    const {
+      authListener,
+      portfolioListner,
+      user,
+      match,
+      fetchTop250
+    } = this.props;
     authListener();
     fetchTop250();
   }
 
   state = {
-    coinsObject: null,
     isAddModalVisible: false,
     coinToAdd: null,
     isEditModalVisible: false,
     coinToEdit: null,
-    amountPurchased: 0,
-    amountInvested: 0,
+    amountPurchased: '',
+    amountInvested: '',
     editAmountPurchased: null,
     editAmountInvested: null,
     redirectUrl: null,
-  };
-
-  commarize = number => {
-    if (number >= 1e3) {
-      var units = ["k", "M", "B", "T"];
-      let unit = Math.floor((number.toFixed(0).length - 1) / 3) * 3;
-      var num = (number / ("1e" + unit)).toFixed(2);
-      var unitname = units[Math.floor(unit / 3) - 1];
-      return num + unitname;
-    }
-    return number.toLocaleString();
+    amountInvestedError: false,
+    amountPurchasedError: false,
+    editAmountInvestedError: false,
+    editAmountPurchasedError: false,
   };
 
   handleUpdateAmountPurchased = amountPurchased => {
@@ -97,49 +99,47 @@ class Portfolio extends Component {
     this.setState({ editAmountInvested: amountInvested });
   };
 
-  prepGraphData = graphData => {
-    const payload = [];
-    graphData.map(dataPoint => {
-      payload.push({ pv: dataPoint });
-    });
-    return payload;
-  };
-
-  prepBarGraphData = graphData => {
-    const barData = graphData.slice(1, 11);
-    const payload = [];
-    barData.map(coin => {
-      const investment = this.getRandomArbitrary(1000, 10000);
-      const profit = this.getRandomArbitrary(-1, 1.5) * investment;
-      payload.push({
-        name: coin.name,
-        investment: investment,
-        profit: profit,
-        total: profit + investment
-      });
-    });
-    return payload;
-  };
-
   toggleAddModal = selectedCoin => {
     const { isAddModalVisible } = this.state;
     const { coins } = this.props;
-    this.setState({ isAddModalVisible: !isAddModalVisible, coinToAdd: selectedCoin });
+    this.setState({
+      isAddModalVisible: !isAddModalVisible,
+      coinToAdd: selectedCoin
+    });
   };
 
   toggleEditModal = coin => {
     const { isEditModalVisible } = this.state;
-    this.setState({
-      isEditModalVisible: !isEditModalVisible,
-      coinToEdit: coin
-    });
+    const { portfolios, match } = this.props;
+    const selectedPortfolio =
+      portfolios.portfolios !== null
+        ? portfolios.portfolios[`-${match.params.id}`]
+        : null;
+    if (isEditModalVisible) {
+      this.setState({
+        isEditModalVisible: !isEditModalVisible,
+        coinToEdit: null,
+        editAmountPurchased: null,
+        editAmountInvested: null,
+      });
+    } else {
+      this.setState({
+        isEditModalVisible: !isEditModalVisible,
+        coinToEdit: coin,
+        editAmountPurchased: selectedPortfolio.coins[coin.portfolioId].amountPurchased,
+        editAmountInvested: selectedPortfolio.coins[coin.portfolioId].amountInvested,
+      });
+    }
   };
-
-  getRandomArbitrary = (min, max) => Math.random() * (max - min) + min;
 
   handleAddCoinToPortfolio = () => {
     const { user, addCoinToPortfolio, match } = this.props;
     const { coinToAdd, amountInvested, amountPurchased } = this.state;
+
+    const numberChecker = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/
+    const isAmountInvestedValid = numberChecker.test(amountInvested)
+    const isAmountPurchasedValid = numberChecker.test(amountPurchased)
+
     const payload = {
       accountKey: user.uid,
       portfolioKey: `-${match.params.id}`,
@@ -149,7 +149,11 @@ class Portfolio extends Component {
         amountInvested: parseInt(amountInvested)
       }
     };
-    addCoinToPortfolio(payload);
+    if (isAmountInvestedValid && isAmountPurchasedValid) {
+      addCoinToPortfolio(payload);
+    } else {
+      this.setState({amountInvestedError: !isAmountInvestedValid, amountPurchasedError: !isAmountPurchasedValid})
+    }
   };
 
   handleEditCoinPortfolio = selectedPortfolio => {
@@ -162,7 +166,9 @@ class Portfolio extends Component {
       editAmountInvested,
       coinToEdit
     } = this.state;
-
+    const numberChecker = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/
+    const isEditAmountInvestedValid = numberChecker.test(editAmountInvested)
+    const isEditAmountPurchasedValid = numberChecker.test(editAmountPurchased)
     const payload = {
       accountKey: user.uid,
       portfolioKey: `-${match.params.id}`,
@@ -179,8 +185,13 @@ class Portfolio extends Component {
             : selectedPortfolio.coins[coinToEdit.portfolioId].amountInvested
       }
     };
-    this.toggleEditModal();
-    editPortfolioCoin(payload);
+    if (isEditAmountInvestedValid && isEditAmountPurchasedValid){
+      this.toggleEditModal();
+      editPortfolioCoin(payload);
+    } else {
+      this.setState({editAmountInvestedError: !isEditAmountInvestedValid, editAmountPurchasedError: !isEditAmountPurchasedValid})
+    }
+
   };
 
   handleDeleteCoinFromPortfolio = () => {
@@ -243,75 +254,9 @@ class Portfolio extends Component {
     return _.orderBy(payload, "total", "desc");
   };
 
-  generatePerformanceStats = (portfolio, timeFrame) => {
-    const { coins } = this.props;
-    let performancePercentage = 0;
-    const totalHoldings = this.calculateHoldings(portfolio);
-    if (portfolio === undefined || portfolio.coins === undefined) return [];
-    const portfolioKeys = Object.keys(portfolio.coins);
-    portfolioKeys.map(portfolioId => {
-      const investment = portfolio.coins[portfolioId];
-      const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
-      const holdinsOfThisCoins =
-        currentCoin.current_price * investment.amountPurchased;
-      performancePercentage +=
-        (holdinsOfThisCoins / totalHoldings) * currentCoin[timeFrame];
-    });
-    return this.round(performancePercentage);
-  };
-
-  calculateHoldings = portfolio => {
-    const { coins } = this.props;
-    let holdings = 0;
-    if (portfolio === undefined || portfolio.coins === undefined) return [];
-    const portfolioKeys = Object.keys(portfolio.coins);
-    portfolioKeys.map(portfolioId => {
-      const investment = portfolio.coins[portfolioId];
-      const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
-      holdings += currentCoin.current_price * investment.amountPurchased;
-    });
-    return holdings;
-  };
-
-  round = number => {
-    if (number === null) return number;
-    if (number > 1) {
-      return (Math.round(number * 100) / 100).toFixed(2);
-    } else {
-      return number.toFixed(2);
-    }
-  };
-
-  generateSevenDayLineChartData = portfolio => {
-    const { coins } = this.props;
-    const payload = [];
-    if (portfolio === undefined || portfolio.coins === undefined) return [];
-    const portfolioKeys = Object.keys(portfolio.coins);
-    const sparkLineList = [];
-    portfolioKeys.map(portfolioId => {
-      const sparkline = [];
-      const investment = portfolio.coins[portfolioId];
-      const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
-      currentCoin.sparkline_in_7d.price.map(price =>
-        sparkline.push(price * investment.amountPurchased)
-      );
-      sparkLineList.push(sparkline);
-    });
-    sparkLineList[0].map((item, index) => {
-      let priceSum = 0;
-      sparkLineList.map(sparkline => (priceSum += sparkline[index]));
-      payload.push({
-        "Total Holdings": this.round(priceSum),
-        Date: this.round(priceSum)
-      });
-    });
-    return payload;
-  };
-
   render() {
     const { portfolios, user, portfolioListner, coins, isAuthed } = this.props;
     const {
-      coinsObject,
       isAddModalVisible,
       coinToAdd,
       coinToEdit,
@@ -320,7 +265,11 @@ class Portfolio extends Component {
       amountInvested,
       editAmountPurchased,
       editAmountInvested,
-      redirectUrl
+      redirectUrl,
+      amountInvestedError,
+      amountPurchasedError,
+      editAmountInvestedError,
+      editAmountPurchasedError,
     } = this.state;
     let userCoinTableList = [];
     let sevenDayPriceData = [];
@@ -341,44 +290,47 @@ class Portfolio extends Component {
     if (user !== null && portfolios.portfolios !== null && coins.length > 0) {
       userCoinTableList = this.generatePortfolioTable(selectedPortfolio);
       barChartData = this.generateBarChartData(selectedPortfolio);
-      oneHourPerformance = this.generatePerformanceStats(
+      oneHourPerformance = generatePerformanceStats(
         selectedPortfolio,
-        "price_change_percentage_1h_in_currency"
+        "price_change_percentage_1h_in_currency",
+        coins
       );
-      oneDayPerformance = this.generatePerformanceStats(
+      oneDayPerformance = generatePerformanceStats(
         selectedPortfolio,
-        "price_change_percentage_24h_in_currency"
+        "price_change_percentage_24h_in_currency",
+        coins
       );
-      sevenDayPerformance = this.generatePerformanceStats(
+      sevenDayPerformance = generatePerformanceStats(
         selectedPortfolio,
-        "price_change_percentage_7d_in_currency"
+        "price_change_percentage_7d_in_currency",
+        coins
       );
-      holdings = this.commarize(this.calculateHoldings(selectedPortfolio));
-      sevenDayPriceData = this.generateSevenDayLineChartData(selectedPortfolio);
+      holdings = commarize(calculateHoldings(selectedPortfolio, coins));
+      sevenDayPriceData = generateSevenDayLineChartData(
+        selectedPortfolio,
+        coins
+      );
     }
-    if (selectedPortfolio === undefined || !isAuthed) return <Redirect to="/" />;
-    if (redirectUrl !== null) return <Redirect to={redirectUrl} />
-    console.log('PORTFOLIO!!!', coins);
+    if (selectedPortfolio === undefined || !isAuthed)
+      return <Redirect to="/" />;
+    if (redirectUrl !== null) return <Redirect to={redirectUrl} />;
     return (
       <div className="portfolioPageWrapper flexColStart">
         <Navbar user={user} />
         <div className="portfolioInnerWrapper">
-        <div
-          style={{ margin: "0 10px" }}
-          className="fullWidth flexLeft"
-        >
-
-        </div>
+          <div style={{ margin: "0 10px" }} className="fullWidth flexLeft" />
           <div
             style={{ margin: "0 10px" }}
             className="fullWidth flexSpaceBetween"
           >
             <div className="flexLeft">
-              <Button onClick={()=>this.setState({redirectUrl: "/"})} style={{ marginRight: "20px" }}>
+              <Button
+                onClick={() => this.setState({ redirectUrl: "/" })}
+                style={{ marginRight: "20px" }}
+              >
                 <KeyboardBackspace />
                 <span style={{ marginLeft: "4px" }}>Back</span>
               </Button>
-
             </div>
 
             <div style={{ width: "300px", paddingBottom: "10px" }}>
@@ -521,7 +473,7 @@ class Portfolio extends Component {
                   <XAxis type="category" hide={true} />
                   <Tooltip
                     formatter={(value, name, props) => {
-                      return `$${this.commarize(
+                      return `$${commarize(
                         parseInt(props.payload["Total Holdings"])
                       )}`;
                     }}
@@ -630,8 +582,14 @@ class Portfolio extends Component {
             <div className="fullWidth flex">
               Adding
               <img
-                src={coinToAdd && coins.filter(coin => coin.id === coinToAdd)[0].image}
-                alt={coinToAdd && coins.filter(coin => coin.id === coinToAdd)[0].name}
+                src={
+                  coinToAdd &&
+                  coins.filter(coin => coin.id === coinToAdd)[0].image
+                }
+                alt={
+                  coinToAdd &&
+                  coins.filter(coin => coin.id === coinToAdd)[0].name
+                }
                 style={{
                   height: "24px",
                   width: "24px",
@@ -644,6 +602,7 @@ class Portfolio extends Component {
               autoFocus
               label="Amount Invested"
               type="number"
+              value={amountInvested}
               onChange={amountInvested =>
                 this.handleUpdateAmountInvested(amountInvested)
               }
@@ -651,7 +610,9 @@ class Portfolio extends Component {
                 e.preventDefault(),
                 this.handleAddCoinToPortfolio()
               ]}
-              error={null}
+              error={amountInvestedError}
+              helperText={amountInvestedError ? "Please Enter a valid Positive Number" : null}
+              clearError={()=>this.setState({amountInvestedError: false, amountPurchasedError: false})}
             />
             <Input
               label="Amount Purchased"
@@ -659,11 +620,14 @@ class Portfolio extends Component {
               onChange={amountPurchased =>
                 this.handleUpdateAmountPurchased(amountPurchased)
               }
+              value={amountPurchased}
               handleSubmit={e => [
                 e.preventDefault(),
                 this.handleAddCoinToPortfolio()
               ]}
-              error={null}
+              error={amountPurchasedError}
+              helperText={amountPurchasedError ? "Please Enter a valid Positive Number" : null}
+              clearError={()=>this.setState({amountInvestedError: false, amountPurchasedError: false})}
             />
             <div className="fullWidth flexRight">
               <GradientButton
@@ -715,7 +679,9 @@ class Portfolio extends Component {
                   e.preventDefault(),
                   this.handleEditCoinPortfolio(selectedPortfolio)
                 ]}
-                error={null}
+                error={editAmountInvestedError}
+                helperText={editAmountInvestedError ? "Please Enter a valid Positive Number" : null}
+                clearError={()=>this.setState({editAmountInvestedError: false, editAmountPurchasedError: false})}
               />
               <Input
                 label="Amount Purchased"
@@ -733,7 +699,9 @@ class Portfolio extends Component {
                   e.preventDefault(),
                   this.handleEditCoinPortfolio(selectedPortfolio)
                 ]}
-                error={null}
+                error={editAmountPurchasedError}
+                helperText={editAmountPurchasedError ? "Please Enter a valid Positive Number" : null}
+                clearError={()=>this.setState({editAmountInvestedError: false, editAmountPurchasedError: false})}
               />
               <div className="fullWidth flexRight">
                 <Button
@@ -771,7 +739,7 @@ const mapStateToProps = state => ({
   user: state.auth.user,
   isAuthed: state.auth.isAuthed,
   portfolios: state.portfolios,
-  coins: state.coins.top250,
+  coins: state.coins.top250
 });
 
 const mapDispatchToProps = dispatch => ({

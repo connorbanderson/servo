@@ -24,6 +24,7 @@ export const calculateHoldings = (portfolio, coins) => {
 
 export const calculatePerformers = (portfolio, timeFrame, coins) => {
   const portfolioCoinList = [];
+  if (portfolio.coins === undefined) return portfolioCoinList;
   Object.keys(portfolio.coins).map(portfolioId => {
     const sparkline = [];
     const investment = portfolio.coins[portfolioId];

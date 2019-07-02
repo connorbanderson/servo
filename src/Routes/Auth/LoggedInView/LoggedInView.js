@@ -147,7 +147,7 @@ class LoggedInView extends Component {
       portfolios,
       authListener,
       portfolioListner,
-      kappa,
+      kappa
     } = this.props;
     const {
       isLogin,
@@ -254,10 +254,17 @@ class LoggedInView extends Component {
                 "price_change_percentage_24h_in_currency",
                 coins
               );
-              const performers = calculatePerformers(portfolio, 'price_change_percentage_24h_in_currency', coins);
-              const topPerformer = performers[0]
-              const worstPerformer = performers[performers.length - 1]
+              const performers = calculatePerformers(
+                portfolio,
+                "price_change_percentage_24h_in_currency",
+                coins
+              );
+              const topPerformer = performers[0];
+              const worstPerformer = performers[performers.length - 1];
               const styleColor = performancePercentage >= 0 ? "#81C784" : "red";
+              const holdings = commarize(
+                calculateHoldings(portfolios[portfolioKey], coins)
+              )
               return (
                 <Paper className="portfolioPaper">
                   <div
@@ -294,23 +301,14 @@ class LoggedInView extends Component {
                       style={{ fontSize: "36px" }}
                       className="primaryGradientText"
                     >
-                      $
-                      {commarize(
-                        calculateHoldings(portfolios[portfolioKey], coins)
-                      )}
+                      ${holdings !== '' ? holdings : 0}
                     </h1>
                   </div>
                   <LineChart width={420} height={120} data={lineChartData}>
                     <Line
                       type="monotone"
                       dataKey="Total Holdings"
-                      stroke={
-                        lineChartData[lineChartData.length - 1][
-                          "Total Holdings"
-                        ] >= lineChartData[0]["Total Holdings"]
-                          ? "#81C784"
-                          : "red"
-                      }
+                      stroke={styleColor}
                       strokeWidth={2}
                       dot={false}
                     />
@@ -320,59 +318,86 @@ class LoggedInView extends Component {
                       hide={true}
                     />
                   </LineChart>
-                  <div className="fullWidth flexRight marginTM marginBM">
-                    <div style={{ marginLeft: "30px" }} className="statWrapper">
+                  {performers.length < 2 && (
+                    <div
+                      style={{ height: "45px" }}
+                      className="fullWidth flexRight marginTM marginBM"
+                    />
+                  )}
+                  {performers.length >= 2 && (
+                    <div className="fullWidth flexRight marginTM marginBM">
                       <div
-                        style={{ flex: "0 0 auto" }}
-                        className="fullWidth flex"
+                        style={{ marginLeft: "30px" }}
+                        className="statWrapper"
                       >
-                        <img
-                          className="marginRM"
-                          src={topPerformer.image}
-                          style={{ height: "24px", width: "24px" }}
-                        />
-                        <span style={{ color: styleRedGreen(topPerformer.price_change_percentage_24h_in_currency) }}>
-                          {this.round(
-                            topPerformer.price_change_percentage_24h_in_currency
-                          )}
-                          %
+                        <div
+                          style={{ flex: "0 0 auto" }}
+                          className="fullWidth flex"
+                        >
+                          <img
+                            className="marginRM"
+                            src={topPerformer && topPerformer.image}
+                            style={{ height: "24px", width: "24px" }}
+                          />
+                          <span
+                            style={{
+                              color: styleRedGreen(
+                                topPerformer.price_change_percentage_24h_in_currency
+                              )
+                            }}
+                          >
+                            {this.round(
+                              topPerformer.price_change_percentage_24h_in_currency
+                            )}
+                            %
+                          </span>
+                        </div>
+                        <span
+                          style={{
+                            marginTop: "10px",
+                            fontSize: "12px",
+                            opacity: "0.4"
+                          }}
+                        >
+                          Top Performer
                         </span>
                       </div>
-                      <span
-                        style={{
-                          marginTop: "10px",
-                          fontSize: "12px",
-                          opacity: "0.4"
-                        }}
+
+                      <div
+                        style={{ marginLeft: "30px" }}
+                        className="statWrapper"
                       >
-                        Top Performer
-                      </span>
-                    </div>
-                    <div style={{ marginLeft: "30px" }} className="statWrapper">
-                      <div className="fullWidth flex">
-                        <img
-                          className="marginRM"
-                          src={worstPerformer.image}
-                          style={{ height: "24px", width: "24px" }}
-                        />
-                        <span style={{ color: styleRedGreen(worstPerformer.price_change_percentage_24h_in_currency) }}>
-                          {this.round(
-                            worstPerformer.price_change_percentage_24h_in_currency
-                          )}
-                          %
+                        <div className="fullWidth flex">
+                          <img
+                            className="marginRM"
+                            src={worstPerformer.image}
+                            style={{ height: "24px", width: "24px" }}
+                          />
+                          <span
+                            style={{
+                              color: styleRedGreen(
+                                worstPerformer.price_change_percentage_24h_in_currency
+                              )
+                            }}
+                          >
+                            {this.round(
+                              worstPerformer.price_change_percentage_24h_in_currency
+                            )}
+                            %
+                          </span>
+                        </div>
+                        <span
+                          style={{
+                            marginTop: "10px",
+                            fontSize: "12px",
+                            opacity: "0.4"
+                          }}
+                        >
+                          Worst Performer
                         </span>
                       </div>
-                      <span
-                        style={{
-                          marginTop: "10px",
-                          fontSize: "12px",
-                          opacity: "0.4"
-                        }}
-                      >
-                        Worst Performer
-                      </span>
                     </div>
-                  </div>
+                  )}
                   <div className="botActionMenu flexRight">
                     <Button
                       onClick={() =>
@@ -479,7 +504,7 @@ const mapStateToProps = state => ({
   coins: state.coins.top250,
   portfolios: state.portfolios.portfolios,
   user: state.auth.user,
-  isAuthed: state.auth.isAuthed,
+  isAuthed: state.auth.isAuthed
 });
 
 const mapDispatchToProps = dispatch => ({
