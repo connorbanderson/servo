@@ -1,5 +1,6 @@
 // Frontend Libs
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import { connect } from "react-redux";
 import { authListener } from "../../../Redux/Actions/auth";
@@ -9,16 +10,20 @@ import {
   editPortfolioCoin,
   deleteCoinFromPortfolio
 } from "../../../Redux/Actions/portfolios";
+import {
+  fetchTop250
+} from "../../../Redux/Actions/coins";
 import _ from "lodash";
 
 // Components
 import Navbar from "../../../Components/Navbar";
 import Table from "../../../Components/Table";
+import Loader from "../../../Components/Loader";
 import GradientPrice from "../../../Components/GradientPrice";
 import GradientButton from "../../../Components/GradientButton";
 import Autocomplete from "../../../Components/Autocomplete";
 import Input from "../../../Components/Input/input.js";
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from "@material-ui/icons/Delete";
 
 import Paper from "@material-ui/core/Paper";
 import Modal from "@material-ui/core/Modal";
@@ -37,6 +42,7 @@ import {
 } from "recharts";
 import ArrowDropUp from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
+import KeyboardBackspace from "@material-ui/icons/KeyboardBackspace";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 // Style
@@ -44,14 +50,14 @@ import "./Portfolio.scss";
 import "../../../index.scss";
 
 class Portfolio extends Component {
+
   componentWillMount() {
-    const { authListener, portfolioListner, user } = this.props;
-    this.getCoins();
+    const { authListener, portfolioListner, user, match, fetchTop250 } = this.props;
     authListener();
+    fetchTop250();
   }
 
   state = {
-    coins: [],
     coinsObject: null,
     isAddModalVisible: false,
     coinToAdd: null,
@@ -60,7 +66,8 @@ class Portfolio extends Component {
     amountPurchased: 0,
     amountInvested: 0,
     editAmountPurchased: null,
-    editAmountInvested: null
+    editAmountInvested: null,
+    redirectUrl: null,
   };
 
   commarize = number => {
@@ -90,23 +97,6 @@ class Portfolio extends Component {
     this.setState({ editAmountInvested: amountInvested });
   };
 
-  getCoins = () => {
-    const reqUrl =
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d,30d,200d,1y";
-    fetch(reqUrl)
-      .then(res => res.json())
-      .then(
-        coins => {
-          const coinsObject = {};
-          coins.map(coin => (coinsObject[coin.id] = coin));
-          this.setState({ coins: coins, coinsObject: coinsObject });
-        },
-        error => {
-          console.log("error", error);
-        }
-      );
-  };
-
   prepGraphData = graphData => {
     const payload = [];
     graphData.map(dataPoint => {
@@ -131,9 +121,10 @@ class Portfolio extends Component {
     return payload;
   };
 
-  toggleAddModal = coin => {
+  toggleAddModal = selectedCoin => {
     const { isAddModalVisible } = this.state;
-    this.setState({ isAddModalVisible: !isAddModalVisible, coinToAdd: coin });
+    const { coins } = this.props;
+    this.setState({ isAddModalVisible: !isAddModalVisible, coinToAdd: selectedCoin });
   };
 
   toggleEditModal = coin => {
@@ -147,10 +138,11 @@ class Portfolio extends Component {
   getRandomArbitrary = (min, max) => Math.random() * (max - min) + min;
 
   handleAddCoinToPortfolio = () => {
-    const { user, addCoinToPortfolio } = this.props;
+    const { user, addCoinToPortfolio, match } = this.props;
     const { coinToAdd, amountInvested, amountPurchased } = this.state;
     const payload = {
       accountKey: user.uid,
+      portfolioKey: `-${match.params.id}`,
       coinInfo: {
         coin: coinToAdd,
         amountPurchased: parseInt(amountPurchased),
@@ -160,8 +152,8 @@ class Portfolio extends Component {
     addCoinToPortfolio(payload);
   };
 
-  handleEditCoinPortfolio = () => {
-    const { user, addCoinToPortfolio, portfolios } = this.props;
+  handleEditCoinPortfolio = selectedPortfolio => {
+    const { user, addCoinToPortfolio, portfolios, match } = this.props;
     const {
       coinToAdd,
       amountInvested,
@@ -173,17 +165,18 @@ class Portfolio extends Component {
 
     const payload = {
       accountKey: user.uid,
+      portfolioKey: `-${match.params.id}`,
       coinKey: coinToEdit.portfolioId,
       updatedObject: {
         coin: coinToEdit.id,
         amountPurchased:
           editAmountPurchased !== null && editAmountPurchased !== ""
             ? parseInt(editAmountPurchased)
-            : portfolios[1].coins[coinToEdit.portfolioId].amountPurchased,
+            : selectedPortfolio.coins[coinToEdit.portfolioId].amountPurchased,
         amountInvested:
           editAmountInvested !== null && editAmountInvested !== ""
             ? parseInt(editAmountInvested)
-            : portfolios[1].coins[coinToEdit.portfolioId].amountInvested
+            : selectedPortfolio.coins[coinToEdit.portfolioId].amountInvested
       }
     };
     this.toggleEditModal();
@@ -192,18 +185,19 @@ class Portfolio extends Component {
 
   handleDeleteCoinFromPortfolio = () => {
     const { coinToEdit } = this.state;
-    const { user } = this.props;
+    const { user, match } = this.props;
     const payload = {
       accountKey: user.uid,
+      portfolioKey: `-${match.params.id}`,
       coinKey: coinToEdit.portfolioId
     };
     deleteCoinFromPortfolio(payload);
   };
 
   generatePortfolioTable = portfolio => {
-    const { coins } = this.state;
+    const { coins } = this.props;
     let payload = [];
-    if (portfolio === undefined) return [];
+    if (portfolio === undefined || portfolio.coins === undefined) return [];
     const portfolioKeys = Object.keys(portfolio.coins);
     const portfolioTable = [];
     portfolioKeys.map(portfolioId => {
@@ -229,9 +223,9 @@ class Portfolio extends Component {
   };
 
   generateBarChartData = portfolio => {
-    const { coins } = this.state;
+    const { coins } = this.props;
     const payload = [];
-    if (portfolio === undefined) return [];
+    if (portfolio === undefined || portfolio.coins === undefined) return [];
     const portfolioKeys = Object.keys(portfolio.coins);
     portfolioKeys.map(portfolioId => {
       const investment = portfolio.coins[portfolioId];
@@ -250,10 +244,10 @@ class Portfolio extends Component {
   };
 
   generatePerformanceStats = (portfolio, timeFrame) => {
-    const { coins } = this.state;
+    const { coins } = this.props;
     let performancePercentage = 0;
     const totalHoldings = this.calculateHoldings(portfolio);
-    if (portfolio === undefined) return [];
+    if (portfolio === undefined || portfolio.coins === undefined) return [];
     const portfolioKeys = Object.keys(portfolio.coins);
     portfolioKeys.map(portfolioId => {
       const investment = portfolio.coins[portfolioId];
@@ -267,9 +261,9 @@ class Portfolio extends Component {
   };
 
   calculateHoldings = portfolio => {
-    const { coins } = this.state;
+    const { coins } = this.props;
     let holdings = 0;
-    if (portfolio === undefined) return [];
+    if (portfolio === undefined || portfolio.coins === undefined) return [];
     const portfolioKeys = Object.keys(portfolio.coins);
     portfolioKeys.map(portfolioId => {
       const investment = portfolio.coins[portfolioId];
@@ -289,9 +283,9 @@ class Portfolio extends Component {
   };
 
   generateSevenDayLineChartData = portfolio => {
-    const { coins } = this.state;
+    const { coins } = this.props;
     const payload = [];
-    if (portfolio === undefined) return [];
+    if (portfolio === undefined || portfolio.coins === undefined) return [];
     const portfolioKeys = Object.keys(portfolio.coins);
     const sparkLineList = [];
     portfolioKeys.map(portfolioId => {
@@ -301,22 +295,22 @@ class Portfolio extends Component {
       currentCoin.sparkline_in_7d.price.map(price =>
         sparkline.push(price * investment.amountPurchased)
       );
-      console.log("new sparkline...", sparkline);
       sparkLineList.push(sparkline);
     });
-    console.log("sparkLineList", sparkLineList);
     sparkLineList[0].map((item, index) => {
       let priceSum = 0;
       sparkLineList.map(sparkline => (priceSum += sparkline[index]));
-      payload.push({ "Total Holdings": this.round(priceSum), "Date": this.round(priceSum) });
+      payload.push({
+        "Total Holdings": this.round(priceSum),
+        Date: this.round(priceSum)
+      });
     });
     return payload;
   };
 
   render() {
-    const { portfolios, user, portfolioListner } = this.props;
+    const { portfolios, user, portfolioListner, coins, isAuthed } = this.props;
     const {
-      coins,
       coinsObject,
       isAddModalVisible,
       coinToAdd,
@@ -325,7 +319,8 @@ class Portfolio extends Component {
       amountPurchased,
       amountInvested,
       editAmountPurchased,
-      editAmountInvested
+      editAmountInvested,
+      redirectUrl
     } = this.state;
     let userCoinTableList = [];
     let sevenDayPriceData = [];
@@ -334,57 +329,58 @@ class Portfolio extends Component {
     let oneDayPerformance = 0;
     let sevenDayPerformance = 0;
     let holdings = 0;
-    if (user !== null && portfolios === null) {
+    if (user !== null && portfolios.portfolios === null) {
       portfolioListner(user.uid);
     }
-    if (user !== null && portfolios !== null && coins.length > 0) {
-      userCoinTableList = this.generatePortfolioTable(portfolios[1]);
-      barChartData = this.generateBarChartData(portfolios[1]);
+    let selectedPortfolio = null;
+    selectedPortfolio =
+      portfolios.portfolios !== null
+        ? portfolios.portfolios[`-${this.props.match.params.id}`]
+        : null;
+    if (selectedPortfolio === null) return <Loader />;
+    if (user !== null && portfolios.portfolios !== null && coins.length > 0) {
+      userCoinTableList = this.generatePortfolioTable(selectedPortfolio);
+      barChartData = this.generateBarChartData(selectedPortfolio);
       oneHourPerformance = this.generatePerformanceStats(
-        portfolios[1],
+        selectedPortfolio,
         "price_change_percentage_1h_in_currency"
       );
       oneDayPerformance = this.generatePerformanceStats(
-        portfolios[1],
+        selectedPortfolio,
         "price_change_percentage_24h_in_currency"
       );
       sevenDayPerformance = this.generatePerformanceStats(
-        portfolios[1],
+        selectedPortfolio,
         "price_change_percentage_7d_in_currency"
       );
-      holdings = this.commarize(this.calculateHoldings(portfolios[1]));
-      sevenDayPriceData = this.generateSevenDayLineChartData(portfolios[1]);
-      console.log(sevenDayPriceData);
-      console.log(coins[71]);
+      holdings = this.commarize(this.calculateHoldings(selectedPortfolio));
+      sevenDayPriceData = this.generateSevenDayLineChartData(selectedPortfolio);
     }
+    if (selectedPortfolio === undefined || !isAuthed) return <Redirect to="/" />;
+    if (redirectUrl !== null) return <Redirect to={redirectUrl} />
+    console.log('PORTFOLIO!!!', coins);
     return (
       <div className="portfolioPageWrapper flexColStart">
         <Navbar user={user} />
         <div className="portfolioInnerWrapper">
+        <div
+          style={{ margin: "0 10px" }}
+          className="fullWidth flexLeft"
+        >
+
+        </div>
           <div
             style={{ margin: "0 10px" }}
             className="fullWidth flexSpaceBetween"
           >
-            <ButtonGroup
-              className="customButtonGroup"
-              variant="contained"
-              size="small"
-              aria-label="Small contained button group"
-            >
-              <Button
-                className="currencyButtonSelected"
-                style={{ backgroundColor: "white" }}
-              >
-                USD
+            <div className="flexLeft">
+              <Button onClick={()=>this.setState({redirectUrl: "/"})} style={{ marginRight: "20px" }}>
+                <KeyboardBackspace />
+                <span style={{ marginLeft: "4px" }}>Back</span>
               </Button>
-              <Button
-                disabled
-                className="currencyButton"
-                style={{ backgroundColor: "white" }}
-              >
-                CAD
-              </Button>
-            </ButtonGroup>
+
+            </div>
+
             <div style={{ width: "300px", paddingBottom: "10px" }}>
               <Autocomplete
                 style={{ position: "relative", zIndex: 99 }}
@@ -401,7 +397,7 @@ class Portfolio extends Component {
                   className="primaryGradientText"
                   style={{ marginRight: "25px", fontSize: "36px" }}
                 >
-                  To Da Moon
+                  {selectedPortfolio.name}
                 </h1>
               </div>
               <div className="flex">
@@ -500,7 +496,7 @@ class Portfolio extends Component {
           )}
 
           <Paper className="portfolio7DayGraphPaper">
-            <span className='sevenDayTitle'>Past 7 Days</span>
+            <span className="sevenDayTitle">Past 7 Days</span>
             {coins.length > 0 && sevenDayPriceData.length > 0 ? (
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart width={"100%"} height={250} data={sevenDayPriceData}>
@@ -522,13 +518,12 @@ class Portfolio extends Component {
                     domain={["dataMin", "dataMax"]}
                     hide={true}
                   />
-                  <XAxis
-                    type="category"
-                    hide={true}
-                  />
+                  <XAxis type="category" hide={true} />
                   <Tooltip
                     formatter={(value, name, props) => {
-                      return `$${this.commarize(parseInt(props.payload['Total Holdings']))}`
+                      return `$${this.commarize(
+                        parseInt(props.payload["Total Holdings"])
+                      )}`;
                     }}
                   />
                 </LineChart>
@@ -540,7 +535,7 @@ class Portfolio extends Component {
 
           <Paper className="portfolioProfitGraphPaper">
             {coins.length > 0 ? (
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={274}>
                 <BarChart
                   height={250}
                   data={barChartData}
@@ -614,11 +609,12 @@ class Portfolio extends Component {
                   oneHourSortDirection: null,
                   oneDaySortDirection: null,
                   sevenDaySortDirection: null,
-                  holdingsSortDirection: "desc",
+                  holdingsSortDirection: "asc",
                   roiSortDirection: null,
                   amountInvestedSortDirection: null,
                   amountPurchasedSortDirection: null
                 }}
+                presetFilter="holdingsSortDirection"
               />
             </div>
           )}
@@ -634,8 +630,8 @@ class Portfolio extends Component {
             <div className="fullWidth flex">
               Adding
               <img
-                src={coinToAdd && coinsObject[coinToAdd].image}
-                alt={coinToAdd && coinsObject[coinToAdd].name}
+                src={coinToAdd && coins.filter(coin => coin.id === coinToAdd)[0].image}
+                alt={coinToAdd && coins.filter(coin => coin.id === coinToAdd)[0].name}
                 style={{
                   height: "24px",
                   width: "24px",
@@ -708,7 +704,8 @@ class Portfolio extends Component {
                 type="number"
                 value={
                   editAmountInvested === null
-                    ? portfolios[1].coins[coinToEdit.portfolioId].amountInvested
+                    ? selectedPortfolio.coins[coinToEdit.portfolioId]
+                        .amountInvested
                     : editAmountInvested
                 }
                 onChange={amountInvested =>
@@ -716,7 +713,7 @@ class Portfolio extends Component {
                 }
                 handleSubmit={e => [
                   e.preventDefault(),
-                  this.handleEditCoinPortfolio()
+                  this.handleEditCoinPortfolio(selectedPortfolio)
                 ]}
                 error={null}
               />
@@ -725,7 +722,7 @@ class Portfolio extends Component {
                 type="number"
                 value={
                   editAmountPurchased === null
-                    ? portfolios[1].coins[coinToEdit.portfolioId]
+                    ? selectedPortfolio.coins[coinToEdit.portfolioId]
                         .amountPurchased
                     : editAmountPurchased
                 }
@@ -734,7 +731,7 @@ class Portfolio extends Component {
                 }
                 handleSubmit={e => [
                   e.preventDefault(),
-                  this.handleEditCoinPortfolio()
+                  this.handleEditCoinPortfolio(selectedPortfolio)
                 ]}
                 error={null}
               />
@@ -748,10 +745,12 @@ class Portfolio extends Component {
                   color="secondary"
                 >
                   Delete
-                  <DeleteIcon style={{marginLeft: '5px'}} />
+                  <DeleteIcon style={{ marginLeft: "5px" }} />
                 </Button>
                 <GradientButton
-                  onClick={() => this.handleEditCoinPortfolio()}
+                  onClick={() =>
+                    this.handleEditCoinPortfolio(selectedPortfolio)
+                  }
                   variant="contained"
                   color="purple"
                 >
@@ -770,11 +769,14 @@ Portfolio.defaultProps = {};
 
 const mapStateToProps = state => ({
   user: state.auth.user,
-  portfolios: state.portfolios.portfolios
+  isAuthed: state.auth.isAuthed,
+  portfolios: state.portfolios,
+  coins: state.coins.top250,
 });
 
 const mapDispatchToProps = dispatch => ({
   authListener: payload => dispatch(authListener(payload)),
+  fetchTop250: payload => dispatch(fetchTop250(payload)),
   addCoinToPortfolio: payload => dispatch(addCoinToPortfolio(payload)),
   editPortfolioCoin: payload => dispatch(editPortfolioCoin(payload)),
   deleteCoinFromPortfolio: payload =>

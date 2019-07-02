@@ -15,25 +15,21 @@ import Button from "@material-ui/core/Button";
 class SortingTable extends Component {
 
   componentDidMount() {
-    this.handleSort("holdings", "holdingsSortDirection");
+    const { presetFilter } = this.props;
+    this.handleSort("holdings", presetFilter);
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    const isStateEqual = _.isEqual(nextState, this.state)
+    const isPropsEqual = _.isEqual(nextProps, this.props)
+    return !isStateEqual || !isPropsEqual
   }
 
   state = {
     sortedData: [],
     dataOrderKey: "holdings",
     columnStateKey: "holdingsSortDirection",
-    columnSortDirection: {
-      rankingSortDirection: null,
-      nameSortDirection: null,
-      priceSortDirection: null,
-      oneHourSortDirection: null,
-      oneDaySortDirection: null,
-      sevenDaySortDirection: null,
-      holdingsSortDirection: 'asc',
-      roiSortDirection: null,
-      amountInvestedSortDirection: null,
-      amountPurchasedSortDirection: null
-    },
+    columnSortDirection: this.props.presetFilters,
      emptyFilters: {
       rankingSortDirection: null,
       nameSortDirection: null,
@@ -103,6 +99,7 @@ class SortingTable extends Component {
     const { dataOrderKey, columnStateKey, emptyFilters, columnSortDirection, newSortDirection } = this.state;
     const { data, dataDisplayKeys, presetFilters, handleEdit } = this.props;
     const sortedData = _.orderBy(data, [dataOrderKey], [newSortDirection]);
+    console.log('Table Rendering...');
     return (
       <Paper className="paperTableWrapper">
         <Table style={{ width: "100%" }} size="small">

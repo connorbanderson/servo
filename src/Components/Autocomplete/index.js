@@ -13,7 +13,6 @@ import AddIcon from "@material-ui/icons/Add";
 
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps
-  console.log(inputProps);
   return (
     <div className="flex">
       <TextField

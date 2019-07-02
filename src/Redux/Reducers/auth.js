@@ -19,7 +19,8 @@ export default (state = default_state, action) => {
       return {
         ...state,
         loading: false,
-        signUpError: action.payload
+        signUpError: action.payload,
+        isAuthed: false
       };
     case "LOGIN_WITH_GOOGLE_REQUEST":
       return {
@@ -30,7 +31,8 @@ export default (state = default_state, action) => {
       return {
         ...state,
         loading: false,
-        error: action.payload
+        error: action.payload,
+        isAuthed: false
       };
     case "LOGIN_REQUEST":
       return {
@@ -55,16 +57,16 @@ export default (state = default_state, action) => {
         loading: false,
         signUpError: null
       };
-    case "SIGN_UP_REQUEST":
-      return {
-        ...state,
-        loading: true
-      };
     case "LOGIN_SUCCESS":
       return {
         ...state,
-        user: action.payload
+        user: action.payload,
+        isAuthed: true
       };
+    case "LOGOUT":
+      return {
+        ...default_state
+      }
     default:
       return state;
   }

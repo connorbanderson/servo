@@ -50,27 +50,23 @@ class Navbar extends Component {
           </div>
           <div className="middle" />
           <div className="rhs flexRight">
-            {user !== null &&
-              <>
-              <Avatar
-                style={{ height: "32px", width: "32px" }}
-                alt="Remy Sharp"
-                src="https://scontent.fyyc4-1.fna.fbcdn.net/v/t1.15752-9/53270755_401825197043838_4318937078982246400_n.png?_nc_cat=105&_nc_ht=scontent.fyyc4-1.fna&oh=9e34adadc4dcb7d326ef65afb4b902d7&oe=5D893ECD"
-              />
-              <span style={{marginLeft: '5px', marginRight: '25px'}}>
-                {user.displayName !== null ? user.displayName : user.email}
-              </span>
-              <Button
-                className="squareButton"
-                variant="contained"
-                size="small"
-                onClick={() => logout()}
-                style={{ backgroundColor: "white", width: "32px" }}
-              >
-                <ExitToApp style={{}} />
-              </Button>
-              </>
-            }
+            <Avatar
+              style={{ height: "32px", width: "32px" }}
+              alt="Remy Sharp"
+              src="https://scontent.fyyc4-1.fna.fbcdn.net/v/t1.15752-9/53270755_401825197043838_4318937078982246400_n.png?_nc_cat=105&_nc_ht=scontent.fyyc4-1.fna&oh=9e34adadc4dcb7d326ef65afb4b902d7&oe=5D893ECD"
+            />
+            <span style={{ marginLeft: "5px", marginRight: "25px" }}>
+              {user.displayName !== null ? user.displayName : user.email}
+            </span>
+            <Button
+              className="squareButton"
+              variant="contained"
+              size="small"
+              onClick={() => logout()}
+              style={{ backgroundColor: "white", width: "32px" }}
+            >
+              <ExitToApp style={{}} />
+            </Button>
           </div>
         </div>
       </nav>
@@ -78,7 +74,9 @@ class Navbar extends Component {
   }
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  user: state.auth.user
+});
 
 const mapDispatchToProps = dispatch => ({
   logout: () => dispatch(logout())

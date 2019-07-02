@@ -1,13 +1,13 @@
 const DEFAULT_STATE = {
-  portfolios: null,
-  selectedPortfolio: null
-};
+  top250: [],
+}
 
 export default (state = DEFAULT_STATE, action) => {
   switch (action.type) {
-    case "UPDATE_PORTFOLIOS":
+    case "UPDATE_TOP_250":
       return {
-        portfolios: action.payload
+        ...state,
+        top250: action.payload
       };
     default:
       return state;

@@ -10,36 +10,41 @@ import fire from "../../fire";
 // in firebase. For example, getMessages is initialized, and calls updateMessages whenever
 // there is a change in data.
 
-export const portfolioListner = key => dispatch => {
-  console.log("portfolioListner", key);
+export const portfolioListner = () => (dispatch, getState) => {
+  const { auth } = getState();
+  let portfoliosObject = {};
   fire
     .database()
-    .ref(`${key}/portfolios`)
+    .ref(`${auth.user.uid}/portfolios`)
     .on("value", snap => {
-      let coinData = {};
-      console.log("GOT SOMETHING", snap);
-      snap.forEach(coin => {
-        const coinsObject = coin.val();
-        const portfolioKey = coin.key;
-        coinData[portfolioKey] = coinsObject;
+      snap.forEach(portfolio => {
+        const portfolioObject = portfolio.val();
+        portfoliosObject[portfolio.key] = portfolioObject;
       });
       dispatch({
         type: "UPDATE_PORTFOLIOS",
-        payload: coinData
+        payload: portfoliosObject
       });
     });
 };
 
+/*
+
+*/
+
 // Posts
-export const addCoin = payload => dispatch => {
+export const createPortfolio = (accountKey, payload) => {
+  console.log("Trying to createPortfolio", accountKey, payload);
   fire
     .database()
-    .ref("messages")
-    .push(payload);
+    .ref(`${accountKey}/portfolios`)
+    .push(payload)
+    .catch(error => {
+      console.log("Create Portfolio ERROR!@!!");
+    });
 };
 
-export const addCoinToPortfolio = ({ accountKey, coinInfo }) => {
-  const portfolioKey = 1;
+export const addCoinToPortfolio = ({ accountKey, portfolioKey, coinInfo }) => {
   fire
     .database()
     .ref(`${accountKey}/portfolios/${portfolioKey}/coins`)
@@ -49,29 +54,41 @@ export const addCoinToPortfolio = ({ accountKey, coinInfo }) => {
     });
 };
 
-export const deleteCoinFromPortfolio = ({ accountKey, coinKey }) => {
-  console.log('deleteCoinFromPortfolio ACTION', accountKey, coinKey);
-  const portfolioKey = 1;
-    fire
-      .database()
-      .ref(`${accountKey}/portfolios/${portfolioKey}/coins`)
-      .child(coinKey)
-      .remove()
-      .catch(error => {
-        console.log("Delete COIN ERROR!@!!");
+export const deleteCoinFromPortfolio = ({
+  accountKey,
+  portfolioKey,
+  coinKey
+}) => {
+  console.log("deleteCoinFromPortfolio ACTION", accountKey, coinKey);
+  fire
+    .database()
+    .ref(`${accountKey}/portfolios/${portfolioKey}/coins`)
+    .child(coinKey)
+    .remove()
+    .catch(error => {
+      console.log("Delete COIN ERROR!@!!");
     });
-}
+};
 
-export const editPortfolioCoin = ({ accountKey, coinKey, updatedObject }) => {
-  console.log('editPortfolioCoin ACTION', updatedObject);
-  const portfolioKey = 1;
-    fire
-      .database()
-      .ref(`${accountKey}/portfolios/${portfolioKey}/coins`)
-      .child(coinKey)
-      .update(updatedObject)
-      .catch(error => {
-        console.log("Edit COIN ERROR!@!!");
+export const editPortfolioCoin = ({
+  accountKey,
+  portfolioKey,
+  coinKey,
+  updatedObject
+}) => {
+  console.log(
+    "editPortfolioCoin ACTION:  accountKey, coinKey, updatedObject",
+    accountKey,
+    coinKey,
+    updatedObject
+  );
+  fire
+    .database()
+    .ref(`${accountKey}/portfolios/${portfolioKey}/coins`)
+    .child(coinKey)
+    .update(updatedObject)
+    .catch(error => {
+      console.log("Edit COIN ERROR!@!!");
     });
 };
 

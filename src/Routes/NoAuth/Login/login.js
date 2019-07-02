@@ -5,7 +5,8 @@ import {
   login,
   loginWithGoogle,
   clearLoginError,
-  clearSignUpError
+  clearSignUpError,
+  authListener
 } from "../../../Redux/Actions/auth";
 import { makeStyles } from "@material-ui/styles";
 import GradientButton from "../../../Components/GradientButton";
@@ -29,6 +30,12 @@ import circuitboardWhite from "./circuitboardWhite.svg";
 import Input from "../../../Components/Input/input.js";
 
 class Login extends Component {
+
+  componentDidMount(){
+    const { authListener } = this.props;
+    authListener();
+  }
+
   state = {
     isLogin: true,
     signupEmail: null,
@@ -285,7 +292,8 @@ const mapDispatchToProps = dispatch => ({
   signUp: (email, password) => dispatch(signUp(email, password)),
   login: (email, password) => dispatch(login(email, password)),
   clearLoginError: () => dispatch(clearLoginError()),
-  clearSignUpError: () => dispatch(clearSignUpError())
+  clearSignUpError: () => dispatch(clearSignUpError()),
+  authListener: () => dispatch(authListener()),
 });
 
 export default connect(
