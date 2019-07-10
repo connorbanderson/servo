@@ -8,7 +8,9 @@ import {
   portfolioListner,
   addCoinToPortfolio,
   editPortfolioCoin,
-  deleteCoinFromPortfolio
+  deleteCoinFromPortfolio,
+  editPortfolioName,
+  deletePortfolio
 } from "../../../Redux/Actions/portfolios";
 import { fetchTop250 } from "../../../Redux/Actions/coins";
 import _ from "lodash";
@@ -18,7 +20,8 @@ import {
   generateSevenDayLineChartData,
   generatePerformanceStats,
   commarize,
-  styleRedGreen
+  styleRedGreen,
+  validatePortfolioName
 } from "../../../utils";
 // Components
 import Navbar from "../../../Components/Navbar";
@@ -69,11 +72,13 @@ class Portfolio extends Component {
 
   state = {
     isAddModalVisible: false,
-    coinToAdd: null,
     isEditModalVisible: false,
+    newPortfolioName: null,
+    coinToAdd: null,
+    isEditPortfolioModalVisible: false,
     coinToEdit: null,
-    amountPurchased: '',
-    amountInvested: '',
+    amountPurchased: "",
+    amountInvested: "",
     editAmountPurchased: null,
     editAmountInvested: null,
     redirectUrl: null,
@@ -81,6 +86,11 @@ class Portfolio extends Component {
     amountPurchasedError: false,
     editAmountInvestedError: false,
     editAmountPurchasedError: false,
+    newPortfolioNameError: false
+  };
+
+  handleUpdatePortfolioName = newName => {
+    this.setState({ newPortfolioName: newName });
   };
 
   handleUpdateAmountPurchased = amountPurchased => {
@@ -120,14 +130,16 @@ class Portfolio extends Component {
         isEditModalVisible: !isEditModalVisible,
         coinToEdit: null,
         editAmountPurchased: null,
-        editAmountInvested: null,
+        editAmountInvested: null
       });
     } else {
       this.setState({
         isEditModalVisible: !isEditModalVisible,
         coinToEdit: coin,
-        editAmountPurchased: selectedPortfolio.coins[coin.portfolioId].amountPurchased,
-        editAmountInvested: selectedPortfolio.coins[coin.portfolioId].amountInvested,
+        editAmountPurchased:
+          selectedPortfolio.coins[coin.portfolioId].amountPurchased,
+        editAmountInvested:
+          selectedPortfolio.coins[coin.portfolioId].amountInvested
       });
     }
   };
@@ -136,9 +148,9 @@ class Portfolio extends Component {
     const { user, addCoinToPortfolio, match } = this.props;
     const { coinToAdd, amountInvested, amountPurchased } = this.state;
 
-    const numberChecker = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/
-    const isAmountInvestedValid = numberChecker.test(amountInvested)
-    const isAmountPurchasedValid = numberChecker.test(amountPurchased)
+    const numberChecker = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
+    const isAmountInvestedValid = numberChecker.test(amountInvested);
+    const isAmountPurchasedValid = numberChecker.test(amountPurchased);
 
     const payload = {
       accountKey: user.uid,
@@ -152,7 +164,10 @@ class Portfolio extends Component {
     if (isAmountInvestedValid && isAmountPurchasedValid) {
       addCoinToPortfolio(payload);
     } else {
-      this.setState({amountInvestedError: !isAmountInvestedValid, amountPurchasedError: !isAmountPurchasedValid})
+      this.setState({
+        amountInvestedError: !isAmountInvestedValid,
+        amountPurchasedError: !isAmountPurchasedValid
+      });
     }
   };
 
@@ -166,9 +181,9 @@ class Portfolio extends Component {
       editAmountInvested,
       coinToEdit
     } = this.state;
-    const numberChecker = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/
-    const isEditAmountInvestedValid = numberChecker.test(editAmountInvested)
-    const isEditAmountPurchasedValid = numberChecker.test(editAmountPurchased)
+    const numberChecker = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
+    const isEditAmountInvestedValid = numberChecker.test(editAmountInvested);
+    const isEditAmountPurchasedValid = numberChecker.test(editAmountPurchased);
     const payload = {
       accountKey: user.uid,
       portfolioKey: `-${match.params.id}`,
@@ -185,13 +200,35 @@ class Portfolio extends Component {
             : selectedPortfolio.coins[coinToEdit.portfolioId].amountInvested
       }
     };
-    if (isEditAmountInvestedValid && isEditAmountPurchasedValid){
+    if (isEditAmountInvestedValid && isEditAmountPurchasedValid) {
       this.toggleEditModal();
       editPortfolioCoin(payload);
     } else {
-      this.setState({editAmountInvestedError: !isEditAmountInvestedValid, editAmountPurchasedError: !isEditAmountPurchasedValid})
+      this.setState({
+        editAmountInvestedError: !isEditAmountInvestedValid,
+        editAmountPurchasedError: !isEditAmountPurchasedValid
+      });
     }
+  };
 
+  handleEditPortfolio = selectedPortfolio => {
+    const { newPortfolioName } = this.state;
+    const { user, match, editPortfolioName } = this.props;
+    const isNewPortfolioNameValid = validatePortfolioName(newPortfolioName);
+    if (isNewPortfolioNameValid) {
+      editPortfolioName({
+        accountKey: user.uid,
+        portfolioKey: `-${match.params.id}`,
+        newName: newPortfolioName
+      });
+      this.setState({
+        isEditPortfolioModalVisible: false
+      });
+    } else {
+      this.setState({
+        newPortfolioNameError: !isNewPortfolioNameValid
+      });
+    }
   };
 
   handleDeleteCoinFromPortfolio = () => {
@@ -214,19 +251,34 @@ class Portfolio extends Component {
     portfolioKeys.map(portfolioId => {
       const investment = portfolio.coins[portfolioId];
       const coinToAdd = coins.filter(coin => coin.id === investment.coin);
-      const holdings = investment.amountPurchased * coinToAdd[0].current_price;
-      const coinsObject = {
-        ...coinToAdd[0],
-        holdings: holdings,
-        amountInvested: parseInt(investment.amountInvested),
-        amountPurchased: parseInt(investment.amountPurchased),
-        roi:
-          investment.amountInvested > 0
-            ? (parseInt(holdings) - parseInt(investment.amountInvested)) /
-              parseInt(investment.amountInvested)
-            : 0,
-        portfolioId: portfolioId
-      };
+      let coinsObject = {};
+      if (coinToAdd.length > 0) {
+        const holdings =
+          investment.amountPurchased * coinToAdd[0].current_price;
+        coinsObject = {
+          ...coinToAdd[0],
+          holdings: holdings,
+          amountInvested: parseInt(investment.amountInvested),
+          amountPurchased: parseInt(investment.amountPurchased),
+          roi:
+            investment.amountInvested > 0
+              ? (parseInt(holdings) - parseInt(investment.amountInvested)) /
+                parseInt(investment.amountInvested)
+              : 0,
+          portfolioId: portfolioId
+        };
+      } else {
+        coinsObject = {
+          ...coinToAdd[0],
+          holdings: 0,
+          amountInvested: parseInt(investment.amountInvested),
+          amountPurchased: parseInt(investment.amountPurchased),
+          roi: 0,
+          portfolioId: portfolioId,
+          investmentName: investment.coin,
+          id: investment.coin
+        };
+      }
       portfolioTable.push(coinsObject);
       payload = _.orderBy(portfolioTable, "holdings", "desc");
     });
@@ -241,11 +293,16 @@ class Portfolio extends Component {
     portfolioKeys.map(portfolioId => {
       const investment = portfolio.coins[portfolioId];
       const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
-      const profit =
-        currentCoin.current_price * investment.amountPurchased -
-        investment.amountInvested;
+      let profit = 0;
+      let name = investment.coin;
+      if (currentCoin) {
+        profit =
+          currentCoin.current_price * investment.amountPurchased -
+          investment.amountInvested;
+        name = currentCoin.name;
+      }
       payload.push({
-        name: currentCoin.name,
+        name: name,
         investment: investment.amountInvested,
         profit: profit,
         total: profit + investment.amountInvested
@@ -254,8 +311,31 @@ class Portfolio extends Component {
     return _.orderBy(payload, "total", "desc");
   };
 
+  longestSubsequence = (x, y) => {
+    let subsequenceLength = 0;
+    if (x.length === 0 || y.length === 0) return subsequenceLength;
+    const xSubset = [...x].slice(1);
+    const ySubset = [...y].slice(1);
+    if (x[0] === y[0]) {
+      subsequenceLength = 1 + this.longestSubsequence(xSubset, ySubset);
+    } else {
+      const pathOne = this.longestSubsequence(x, ySubset);
+      const pathTwo = this.longestSubsequence(xSubset, y);
+      subsequenceLength = pathOne >= pathTwo ? pathOne : pathTwo;
+    }
+    return subsequenceLength;
+  };
+
   render() {
-    const { portfolios, user, portfolioListner, coins, isAuthed } = this.props;
+    const {
+      portfolios,
+      user,
+      portfolioListner,
+      coins,
+      isAuthed,
+      deletePortfolio,
+      match
+    } = this.props;
     const {
       isAddModalVisible,
       coinToAdd,
@@ -270,6 +350,9 @@ class Portfolio extends Component {
       amountPurchasedError,
       editAmountInvestedError,
       editAmountPurchasedError,
+      newPortfolioName,
+      isEditPortfolioModalVisible,
+      newPortfolioNameError
     } = this.state;
     let userCoinTableList = [];
     let sevenDayPriceData = [];
@@ -314,6 +397,9 @@ class Portfolio extends Component {
     if (selectedPortfolio === undefined || !isAuthed)
       return <Redirect to="/" />;
     if (redirectUrl !== null) return <Redirect to={redirectUrl} />;
+
+    const result = this.longestSubsequence("abc", "aedace");
+
     return (
       <div className="portfolioPageWrapper flexColStart">
         <Navbar user={user} />
@@ -443,6 +529,18 @@ class Portfolio extends Component {
               </div>
               <div style={{ width: "25%" }} className="flexRight">
                 <GradientPrice price={holdings} />
+                <Button
+                  onClick={() =>
+                    this.setState({
+                      isEditPortfolioModalVisible: !isEditPortfolioModalVisible
+                    })
+                  }
+                  variant="outlined"
+                  color="secondary"
+                  style={{ marginLeft: "25px" }}
+                >
+                  Edit
+                </Button>
               </div>
             </Paper>
           )}
@@ -611,8 +709,17 @@ class Portfolio extends Component {
                 this.handleAddCoinToPortfolio()
               ]}
               error={amountInvestedError}
-              helperText={amountInvestedError ? "Please Enter a valid Positive Number" : null}
-              clearError={()=>this.setState({amountInvestedError: false, amountPurchasedError: false})}
+              helperText={
+                amountInvestedError
+                  ? "Please Enter a valid Positive Number"
+                  : null
+              }
+              clearError={() =>
+                this.setState({
+                  amountInvestedError: false,
+                  amountPurchasedError: false
+                })
+              }
             />
             <Input
               label="Amount Purchased"
@@ -626,8 +733,17 @@ class Portfolio extends Component {
                 this.handleAddCoinToPortfolio()
               ]}
               error={amountPurchasedError}
-              helperText={amountPurchasedError ? "Please Enter a valid Positive Number" : null}
-              clearError={()=>this.setState({amountInvestedError: false, amountPurchasedError: false})}
+              helperText={
+                amountPurchasedError
+                  ? "Please Enter a valid Positive Number"
+                  : null
+              }
+              clearError={() =>
+                this.setState({
+                  amountInvestedError: false,
+                  amountPurchasedError: false
+                })
+              }
             />
             <div className="fullWidth flexRight">
               <GradientButton
@@ -640,6 +756,73 @@ class Portfolio extends Component {
             </div>
           </div>
         </Modal>
+        <Modal
+          aria-labelledby="simple-modal-title"
+          aria-describedby="simple-modal-description"
+          open={isEditPortfolioModalVisible}
+          onClose={() => this.setState({ isEditPortfolioModalVisible: false })}
+          className="modalContainer"
+        >
+          <div className="defaultModal">
+            <div className="fullWidth flex">
+              <b> Edit Portfolio </b>
+            </div>
+            <Input
+              autoFocus
+              label="Name"
+              value={
+                newPortfolioName !== null
+                  ? newPortfolioName
+                  : selectedPortfolio.name
+              }
+              onChange={name => this.handleUpdatePortfolioName(name)}
+              handleSubmit={e => [
+                e.preventDefault(),
+                this.handleEditPortfolio()
+              ]}
+              error={newPortfolioNameError}
+              helperText={
+                newPortfolioNameError ? "Please Enter a valid name" : null
+              }
+              clearError={() =>
+                this.setState({
+                  newPortfolioNameError: false
+                })
+              }
+            />
+            <div className="fullWidth flexRight" style={{ marginTop: "10px" }}>
+              <Button
+                onClick={() => [
+                  deletePortfolio({
+                    accountKey: user.uid,
+                    portfolioKey: `-${match.params.id}`,
+                  }),
+                  this.setState({isEditModalVisible: false})
+                ]}
+                variant="outlined"
+                color="secondary"
+                size="small"
+              >
+                Delete
+                <DeleteIcon style={{ marginLeft: "5px" }} />
+              </Button>
+              <GradientButton
+                onClick={() => this.handleEditPortfolio()}
+                variant="contained"
+                color="purple"
+              >
+                Save
+              </GradientButton>
+            </div>
+          </div>
+        </Modal>
+
+
+
+
+
+
+
         {coinToEdit !== null && coinToEdit !== undefined && (
           <Modal
             aria-labelledby="edit-portfolio-holding"
@@ -680,8 +863,17 @@ class Portfolio extends Component {
                   this.handleEditCoinPortfolio(selectedPortfolio)
                 ]}
                 error={editAmountInvestedError}
-                helperText={editAmountInvestedError ? "Please Enter a valid Positive Number" : null}
-                clearError={()=>this.setState({editAmountInvestedError: false, editAmountPurchasedError: false})}
+                helperText={
+                  editAmountInvestedError
+                    ? "Please Enter a valid Positive Number"
+                    : null
+                }
+                clearError={() =>
+                  this.setState({
+                    editAmountInvestedError: false,
+                    editAmountPurchasedError: false
+                  })
+                }
               />
               <Input
                 label="Amount Purchased"
@@ -700,8 +892,17 @@ class Portfolio extends Component {
                   this.handleEditCoinPortfolio(selectedPortfolio)
                 ]}
                 error={editAmountPurchasedError}
-                helperText={editAmountPurchasedError ? "Please Enter a valid Positive Number" : null}
-                clearError={()=>this.setState({editAmountInvestedError: false, editAmountPurchasedError: false})}
+                helperText={
+                  editAmountPurchasedError
+                    ? "Please Enter a valid Positive Number"
+                    : null
+                }
+                clearError={() =>
+                  this.setState({
+                    editAmountInvestedError: false,
+                    editAmountPurchasedError: false
+                  })
+                }
               />
               <div className="fullWidth flexRight">
                 <Button
@@ -749,7 +950,9 @@ const mapDispatchToProps = dispatch => ({
   editPortfolioCoin: payload => dispatch(editPortfolioCoin(payload)),
   deleteCoinFromPortfolio: payload =>
     dispatch(deleteCoinFromPortfolio(payload)),
-  portfolioListner: payload => dispatch(portfolioListner(payload))
+  portfolioListner: payload => dispatch(portfolioListner(payload)),
+  editPortfolioName: payload => dispatch(editPortfolioName(payload)),
+  deletePortfolio: payload => dispatch(deletePortfolio(payload))
 });
 
 export default connect(

@@ -70,6 +70,32 @@ export const deleteCoinFromPortfolio = ({
     });
 };
 
+export const editPortfolioName = ({ accountKey, portfolioKey, newName }) => {
+  console.log(
+    "editPortfolioName ACTION:  accountKey, coinKey, newName",
+    accountKey,
+    portfolioKey,
+    newName
+  );
+  fire
+    .database()
+    .ref(`${accountKey}/portfolios/${portfolioKey}`)
+    .update({ name: newName })
+    .catch(error => {
+      console.log("Edit COIN ERROR!@!!");
+    });
+};
+
+export const deletePortfolio = ({ accountKey, portfolioKey }) => {
+  fire
+    .database()
+    .ref(`${accountKey}/portfolios/${portfolioKey}`)
+    .remove()
+    .catch(error => {
+      console.log("Edit COIN ERROR!@!!");
+    });
+};
+
 export const editPortfolioCoin = ({
   accountKey,
   portfolioKey,

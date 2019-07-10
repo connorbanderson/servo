@@ -10,7 +10,7 @@ import {
 } from "../../../Redux/Actions/auth";
 import { makeStyles } from "@material-ui/styles";
 import GradientButton from "../../../Components/GradientButton";
-
+import { validateEmail, validatePassword } from "../../../utils";
 // Frontend Lib Imports
 
 // Style Imports
@@ -30,8 +30,7 @@ import circuitboardWhite from "./circuitboardWhite.svg";
 import Input from "../../../Components/Input/input.js";
 
 class Login extends Component {
-
-  componentDidMount(){
+  componentDidMount() {
     const { authListener } = this.props;
     authListener();
   }
@@ -39,9 +38,43 @@ class Login extends Component {
   state = {
     isLogin: true,
     signupEmail: null,
+    signupEmailError: false,
     signupPassword: null,
+    signupPasswordError: false,
     loginEmail: null,
-    loginPassword: null
+    loginEmailError: false,
+    loginPassword: null,
+    loginPasswordError: false
+  };
+
+  handleSignupRequest = () => {
+    const { signupEmail, signupPassword } = this.state;
+    const { signUp } = this.props;
+    const isValidEmail = validateEmail(signupEmail);
+    const isValidPassword = validatePassword(signupPassword);
+    if (isValidEmail && isValidPassword) {
+      signUp(signupEmail, signupPassword);
+    } else {
+      this.setState({
+        signupEmailError: !isValidEmail,
+        signupPasswordError: !isValidPassword
+      });
+    }
+  };
+
+  handleLoginRequest = () => {
+    const { loginEmail, loginPassword } = this.state;
+    const { login } = this.props;
+    const isValidEmail = validateEmail(loginEmail);
+    const isValidPassword = validatePassword(loginPassword);
+    if (isValidEmail && isValidPassword) {
+      login(loginEmail, loginPassword);
+    } else {
+      this.setState({
+        loginEmailError: !isValidEmail,
+        loginPasswordError: !isValidPassword
+      });
+    }
   };
 
   render() {
@@ -50,7 +83,11 @@ class Login extends Component {
       signupEmail,
       signupPassword,
       loginEmail,
-      loginPassword
+      loginPassword,
+      loginEmailError,
+      loginPasswordError,
+      signupPasswordError,
+      signupEmailError
     } = this.state;
     const {
       loginWithGoogle,
@@ -60,7 +97,6 @@ class Login extends Component {
       clearLoginError,
       clearSignUpError
     } = this.props;
-    console.log("auth", auth);
     return (
       <section className="loginWrapper">
         <img src={logo} className="topRightLogo noselect" alt="logo" />
@@ -139,6 +175,7 @@ class Login extends Component {
             </div>
             <div className="smallText">or use your email account</div>
             <Input
+              autoFocus
               label="Email"
               type="email"
               onChange={email => {
@@ -146,10 +183,19 @@ class Login extends Component {
               }}
               handleSubmit={e => [
                 e.preventDefault(),
-                login(loginEmail, loginPassword)
+                this.handleLoginRequest()
               ]}
-              error={auth.loginError !== null}
-              clearError={clearLoginError}
+              error={loginEmailError || auth.loginError !== null}
+              helperText={
+                loginEmailError ? "Please enter a valid email address" : null
+              }
+              clearError={() => [
+                this.setState({
+                  loginEmailError: false,
+                  loginPasswordError: false
+                }),
+                clearLoginError()
+              ]}
             />
             <div className="errorTextInputWrapper">
               <Input
@@ -160,15 +206,25 @@ class Login extends Component {
                 }
                 handleSubmit={e => [
                   e.preventDefault(),
-                  login(loginEmail, loginPassword)
+                  this.handleLoginRequest()
                 ]}
-                error={auth.loginError !== null}
-                helperText={auth.loginError !== null ? auth.loginError : null}
-                clearError={clearLoginError}
+                error={loginPasswordError || auth.loginError !== null}
+                helperText={
+                  loginPasswordError
+                    ? "Password should be at least 6 characters"
+                    : auth.loginError
+                }
+                clearError={() => [
+                  this.setState({
+                    loginEmailError: false,
+                    loginPasswordError: false
+                  }),
+                  clearLoginError()
+                ]}
               />
             </div>
             <GradientButton
-              onClick={() => login(loginEmail, loginPassword)}
+              onClick={() => this.handleLoginRequest()}
               variant="contained"
               color="purple"
             >
@@ -223,10 +279,19 @@ class Login extends Component {
               label="Email"
               handleSubmit={e => [
                 e.preventDefault(),
-                signUp(signupEmail, signupPassword)
+                this.handleSignupRequest()
               ]}
-              error={auth.signUpError !== null}
-              clearError={clearSignUpError}
+              error={signupEmailError || auth.signUpError !== null}
+              helperText={
+                signupEmailError ? "Please enter a valid email address" : null
+              }
+              clearError={() => [
+                this.setState({
+                  signupEmailError: false,
+                  signupPasswordError: false
+                }),
+                clearSignUpError()
+              ]}
             />
             <div className="errorTextInputWrapper">
               <Input
@@ -238,16 +303,26 @@ class Login extends Component {
                 label="Password"
                 handleSubmit={e => [
                   e.preventDefault(),
-                  signUp(signupEmail, signupPassword)
+                  this.handleSignupRequest()
                 ]}
-                error={auth.signUpError !== null}
-                clearError={clearSignUpError}
-                helperText={auth.signUpError !== null ? auth.signUpError : null}
+                error={signupPasswordError || auth.signUpError !== null}
+                helperText={
+                  signupPasswordError
+                    ? "Password should be at least 6 characters"
+                    : auth.signUpError
+                }
+                clearError={() => [
+                  this.setState({
+                    signupEmailError: false,
+                    signupPasswordError: false
+                  }),
+                  clearSignUpError()
+                ]}
               />
             </div>
             <GradientButton
               style={{ marginTop: "40px" }}
-              onClick={() => signUp(signupEmail, signupPassword)}
+              onClick={() => this.handleSignupRequest()}
               variant="contained"
               color="purple"
             >
@@ -293,7 +368,7 @@ const mapDispatchToProps = dispatch => ({
   login: (email, password) => dispatch(login(email, password)),
   clearLoginError: () => dispatch(clearLoginError()),
   clearSignUpError: () => dispatch(clearSignUpError()),
-  authListener: () => dispatch(authListener()),
+  authListener: () => dispatch(authListener())
 });
 
 export default connect(

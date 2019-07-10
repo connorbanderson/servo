@@ -13,16 +13,15 @@ import SortingTableCell from "./SortingTableCell";
 import Button from "@material-ui/core/Button";
 
 class SortingTable extends Component {
-
   componentDidMount() {
     const { presetFilter } = this.props;
     this.handleSort("holdings", presetFilter);
   }
 
-  shouldComponentUpdate(nextProps, nextState){
-    const isStateEqual = _.isEqual(nextState, this.state)
-    const isPropsEqual = _.isEqual(nextProps, this.props)
-    return !isStateEqual || !isPropsEqual
+  shouldComponentUpdate(nextProps, nextState) {
+    const isStateEqual = _.isEqual(nextState, this.state);
+    const isPropsEqual = _.isEqual(nextProps, this.props);
+    return !isStateEqual || !isPropsEqual;
   }
 
   state = {
@@ -30,30 +29,33 @@ class SortingTable extends Component {
     dataOrderKey: "holdings",
     columnStateKey: "holdingsSortDirection",
     columnSortDirection: this.props.presetFilters,
-     emptyFilters: {
+    emptyFilters: {
       rankingSortDirection: null,
       nameSortDirection: null,
       priceSortDirection: null,
+      volumeSortDirection: null,
       oneHourSortDirection: null,
       oneDaySortDirection: null,
       sevenDaySortDirection: null,
+      athSortDirection: null,
       holdingsSortDirection: null,
       roiSortDirection: null,
       amountInvestedSortDirection: null,
       amountPurchasedSortDirection: null
-    },
+    }
   };
 
   handleSort = (dataOrderKey, columnStateKey) => {
-    const { columnSortDirection, emptyFilters } = this.state
-    const newSortDirection = columnSortDirection[columnStateKey] === "desc" ? "asc" : "desc";
+    const { columnSortDirection, emptyFilters } = this.state;
+    const newSortDirection =
+      columnSortDirection[columnStateKey] === "desc" ? "asc" : "desc";
     const newColumnSortDirection = { ...emptyFilters };
     newColumnSortDirection[columnStateKey] = newSortDirection;
     this.setState({
       dataOrderKey: dataOrderKey,
       columnStateKey: columnStateKey,
       columnSortDirection: newColumnSortDirection,
-      newSortDirection: newSortDirection,
+      newSortDirection: newSortDirection
     });
   };
 
@@ -62,6 +64,7 @@ class SortingTable extends Component {
   };
 
   commarize = number => {
+    if (number === undefined) return "-";
     if (number >= 1e3) {
       var units = ["k", "M", "B", "T"];
       let unit = Math.floor((number.toFixed(0).length - 1) / 3) * 3;
@@ -87,6 +90,7 @@ class SortingTable extends Component {
   };
 
   round = number => {
+    if (number === undefined) return "-";
     if (number === null) return number;
     if (number > 1) {
       return (Math.round(number * 100) / 100).toFixed(2);
@@ -96,12 +100,17 @@ class SortingTable extends Component {
   };
 
   render() {
-    const { dataOrderKey, columnStateKey, emptyFilters, columnSortDirection, newSortDirection } = this.state;
+    const {
+      dataOrderKey,
+      columnStateKey,
+      emptyFilters,
+      columnSortDirection,
+      newSortDirection
+    } = this.state;
     const { data, dataDisplayKeys, presetFilters, handleEdit } = this.props;
     const sortedData = _.orderBy(data, [dataOrderKey], [newSortDirection]);
-    console.log('Table Rendering...');
     return (
-      <Paper className="paperTableWrapper">
+      <Paper style={{width: '100%'}} className="paperTableWrapper">
         <Table style={{ width: "100%" }} size="small">
           <TableHead className="customTableHead">
             <TableRow>
@@ -190,6 +199,19 @@ class SortingTable extends Component {
                   handleSort={this.handleSort}
                 />
               )}
+              {dataDisplayKeys.total_volume && (
+                <SortingTableCell
+                  sortLabel={
+                    <span style={{ width: "100%", textAlign: "right" }}>
+                      Volume
+                    </span>
+                  }
+                  sortKey={columnSortDirection.volumeSortDirection}
+                  sortKeyString="volumeSortDirection"
+                  dataKey="total_volume"
+                  handleSort={this.handleSort}
+                />
+              )}
               {dataDisplayKeys.price_change_percentage_1h_in_currency && (
                 <SortingTableCell
                   sortLabel={
@@ -240,6 +262,19 @@ class SortingTable extends Component {
                 >
                   Available Supply
                 </TableCell>
+              )}
+              {dataDisplayKeys.ath_change_percentage && (
+                <SortingTableCell
+                  sortLabel={
+                    <span style={{ width: "100%", textAlign: "right" }}>
+                      ATH Δ
+                    </span>
+                  }
+                  sortKey={columnSortDirection.athSortDirection}
+                  sortKeyString="athSortDirection"
+                  dataKey="ath_change_percentage"
+                  handleSort={this.handleSort}
+                />
               )}
               {dataDisplayKeys.market_cap && (
                 <TableCell
@@ -302,23 +337,35 @@ class SortingTable extends Component {
                   {dataDisplayKeys.name && (
                     <TableCell align="left">
                       <div className="flexLeft">
-                        <img
-                          src={coin.image}
-                          alt={coin.name}
-                          style={{
-                            height: "24px",
-                            width: "24px",
-                            marginRight: "10px",
-                            marginTop: "-2px"
-                          }}
-                        />
-                        {coin.name}
-                        <span
-                          style={{
-                            textTransform: "uppercase",
-                            marginLeft: "5px"
-                          }}
-                        >{` (${coin.symbol})`}</span>
+                        {coin.name ? (
+                          <>
+                            <img
+                              src={coin.image}
+                              alt={coin.name}
+                              style={{
+                                height: "24px",
+                                width: "24px",
+                                marginRight: "10px",
+                                marginTop: "-2px"
+                              }}
+                            />
+                            {coin.name}
+                            <span
+                              style={{
+                                textTransform: "uppercase",
+                                marginLeft: "5px"
+                              }}
+                            >{` (${coin.symbol})`}</span>
+                          </>
+                        ) : (
+                          <span
+                            style={{
+                              textTransform: "uppercase"
+                            }}
+                          >
+                            {coin.investmentName}
+                          </span>
+                        )}
                       </div>
                     </TableCell>
                   )}
@@ -354,6 +401,13 @@ class SortingTable extends Component {
                     <TableCell align="right">
                       <div className="fullWidth flex">
                         ${this.commarize(coin.current_price)}
+                      </div>
+                    </TableCell>
+                  )}
+                  {dataDisplayKeys.total_volume && (
+                    <TableCell align="right">
+                      <div className="fullWidth flex">
+                        ${this.commarize(coin.total_volume)}
                       </div>
                     </TableCell>
                   )}
@@ -452,6 +506,17 @@ class SortingTable extends Component {
                       )}
                     </TableCell>
                   )}
+                  {dataDisplayKeys.ath_change_percentage && (
+                    <TableCell align="right">
+                      <span
+                        style={{
+                          color: this.handleColor(coin.ath_change_percentage)
+                        }}
+                      >
+                        {this.round(coin.ath_change_percentage)}%
+                      </span>
+                    </TableCell>
+                  )}
                   {dataDisplayKeys.market_cap && (
                     <TableCell align="right">
                       ${this.commarize(coin.market_cap)}
@@ -462,7 +527,11 @@ class SortingTable extends Component {
                       <LineChart
                         width={150}
                         height={50}
-                        data={this.prepGraphData(coin.sparkline_in_7d.price)}
+                        data={
+                          coin.sparkline_in_7d
+                            ? this.prepGraphData(coin.sparkline_in_7d.price)
+                            : []
+                        }
                       >
                         <Line
                           type="monotone"
@@ -507,6 +576,7 @@ SortingTable.defaultProps = {
     market_cap_rank: true,
     name: true,
     current_price: true,
+    total_volume: true,
     price_change_percentage_1h_in_currency: true,
     price_change_percentage_24h_in_currency: true,
     price_change_percentage_7d_in_currency: true,
@@ -523,6 +593,7 @@ SortingTable.defaultProps = {
     rankingSortDirection: null,
     nameSortDirection: null,
     priceSortDirection: null,
+    volumeSortDirection: null,
     oneHourSortDirection: null,
     oneDaySortDirection: null,
     sevenDaySortDirection: null,

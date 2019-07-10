@@ -1,13 +1,14 @@
-import React from 'react'
+import React from "react";
 import _ from "lodash";
+import { PASSWORD_REGX, EMAIL_REGX, PORTFOLIO_NAME_REGX } from "./constants";
 
 const round = number => {
- if (number === null) return number;
- if (number > 1) {
-   return (Math.round(number * 100) / 100).toFixed(2);
- } else {
-   return number.toFixed(2);
- }
+  if (number === null) return number;
+  if (number > 1) {
+    return (Math.round(number * 100) / 100).toFixed(2);
+  } else {
+    return number.toFixed(2);
+  }
 };
 
 export const calculateHoldings = (portfolio, coins) => {
@@ -17,7 +18,9 @@ export const calculateHoldings = (portfolio, coins) => {
   portfolioKeys.map(portfolioId => {
     const investment = portfolio.coins[portfolioId];
     const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
-    holdings += currentCoin.current_price * investment.amountPurchased;
+    if (currentCoin) {
+      holdings += currentCoin.current_price * investment.amountPurchased;
+    }
   });
   return holdings;
 };
@@ -29,10 +32,12 @@ export const calculatePerformers = (portfolio, timeFrame, coins) => {
     const sparkline = [];
     const investment = portfolio.coins[portfolioId];
     const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
-    portfolioCoinList.push(currentCoin)
+    if (currentCoin){
+      portfolioCoinList.push(currentCoin);
+    }
   });
   const payload = _.orderBy(portfolioCoinList, timeFrame, "desc");
-  return payload
+  return payload;
 };
 
 export const generateSevenDayLineChartData = (portfolio, coins) => {
@@ -44,10 +49,12 @@ export const generateSevenDayLineChartData = (portfolio, coins) => {
     const sparkline = [];
     const investment = portfolio.coins[portfolioId];
     const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
-    currentCoin.sparkline_in_7d.price.map(price =>
-      sparkline.push(price * investment.amountPurchased)
-    );
-    sparkLineList.push(sparkline);
+    if (currentCoin) {
+      currentCoin.sparkline_in_7d.price.map(price =>
+        sparkline.push(price * investment.amountPurchased)
+      );
+      sparkLineList.push(sparkline);
+    }
   });
   sparkLineList[0].map((item, index) => {
     let priceSum = 0;
@@ -57,7 +64,6 @@ export const generateSevenDayLineChartData = (portfolio, coins) => {
       Date: round(priceSum)
     });
   });
-  console.log('Hey this is the payload', payload);
   return payload;
 };
 
@@ -69,10 +75,12 @@ export const generatePerformanceStats = (portfolio, timeFrame, coins) => {
   portfolioKeys.map(portfolioId => {
     const investment = portfolio.coins[portfolioId];
     const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
-    const holdinsOfThisCoins =
-      currentCoin.current_price * investment.amountPurchased;
-    performancePercentage +=
-      (holdinsOfThisCoins / totalHoldings) * currentCoin[timeFrame];
+    if (currentCoin) {
+      const holdinsOfThisCoins =
+        currentCoin.current_price * investment.amountPurchased;
+      performancePercentage +=
+        (holdinsOfThisCoins / totalHoldings) * currentCoin[timeFrame];
+    }
   });
   return round(performancePercentage);
 };
@@ -88,4 +96,10 @@ export const commarize = number => {
   return number.toLocaleString();
 };
 
-export const styleRedGreen = number => number >= 0 ? "#81C784" : "red";
+export const styleRedGreen = number => (number >= 0 ? "#81C784" : "red");
+
+export const validateEmail = email => EMAIL_REGX.test(email);
+
+export const validatePassword = password => PASSWORD_REGX.test(password);
+
+export const validatePortfolioName = name => PORTFOLIO_NAME_REGX.test(name);

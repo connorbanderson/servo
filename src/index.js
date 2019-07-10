@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import configureStore from "./Redux/store";
 import "./styles/global.scss";
 import App from "./App";
+import Practice from "./Practice";
 import AppController from "./AppController";
 import Login from "./Routes/NoAuth/Login/login.js";
 import history from './history';
@@ -15,14 +16,11 @@ import * as serviceWorker from "./serviceWorker";
 
 const store = configureStore()
 
-const { auth } = store.getState()
-
-console.log('Index, Auth', auth)
-
 ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <Route exact path="/" component={AppController} />
+      <Route exact path="/practice" component={Practice} />
       <Route path="/portfolio/:id" component={Portfolio} />
     </Router>
   </Provider>,

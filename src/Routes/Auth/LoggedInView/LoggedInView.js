@@ -168,6 +168,7 @@ class LoggedInView extends Component {
     const hasCreatedMaxPortfolios = Object.keys(portfolios).length >= 2;
     if (redirectUrl !== null) return <Redirect to={redirectUrl} />;
     if (!isAuthed) return <Redirect to="/" />;
+    console.log(user);
     return (
       <div className="App">
         <div className="dashboardWrapper">
@@ -251,12 +252,12 @@ class LoggedInView extends Component {
               );
               const performancePercentage = generatePerformanceStats(
                 portfolio,
-                "price_change_percentage_24h_in_currency",
+                "price_change_percentage_7d_in_currency",
                 coins
               );
               const performers = calculatePerformers(
                 portfolio,
-                "price_change_percentage_24h_in_currency",
+                "price_change_percentage_7d_in_currency",
                 coins
               );
               const topPerformer = performers[0];
@@ -265,6 +266,7 @@ class LoggedInView extends Component {
               const holdings = commarize(
                 calculateHoldings(portfolios[portfolioKey], coins)
               )
+              console.log(topPerformer);
               return (
                 <Paper className="portfolioPaper">
                   <div
@@ -285,16 +287,8 @@ class LoggedInView extends Component {
                           </span>
                         </div>
                       </div>
-                      <div className="customRadioWrapper flex marginTS">
-                        <div className="radioButton flex">
-                          <span>1H</span>
-                        </div>
-                        <div className="radioButton radioButtonActive flex">
-                          <span>24H</span>
-                        </div>
-                        <div className="radioButton flex">
-                          <span>7D</span>
-                        </div>
+                      <div className="flexLeft marginTS">
+                        <small style={{opacity: 0.3, fontWeight: 'bold'}}>Past 7 Days</small>
                       </div>
                     </div>
                     <h1
@@ -342,12 +336,12 @@ class LoggedInView extends Component {
                           <span
                             style={{
                               color: styleRedGreen(
-                                topPerformer.price_change_percentage_24h_in_currency
+                                topPerformer.price_change_percentage_7d_in_currency
                               )
                             }}
                           >
                             {this.round(
-                              topPerformer.price_change_percentage_24h_in_currency
+                              topPerformer.price_change_percentage_7d_in_currency
                             )}
                             %
                           </span>
@@ -376,12 +370,12 @@ class LoggedInView extends Component {
                           <span
                             style={{
                               color: styleRedGreen(
-                                worstPerformer.price_change_percentage_24h_in_currency
+                                worstPerformer.price_change_percentage_7d_in_currency
                               )
                             }}
                           >
                             {this.round(
-                              worstPerformer.price_change_percentage_24h_in_currency
+                              worstPerformer.price_change_percentage_7d_in_currency
                             )}
                             %
                           </span>
@@ -429,10 +423,12 @@ class LoggedInView extends Component {
                   market_cap_rank: true,
                   name: true,
                   current_price: true,
+                  total_volume: true,
                   price_change_percentage_1h_in_currency: true,
                   price_change_percentage_24h_in_currency: true,
                   price_change_percentage_7d_in_currency: true,
                   circulating_supply: true,
+                  ath_change_percentage: true,
                   market_cap: false,
                   sparkline_in_7d: true,
                   roi: false,
@@ -445,9 +441,11 @@ class LoggedInView extends Component {
                   rankingSortDirection: "asc",
                   nameSortDirection: null,
                   priceSortDirection: null,
+                  volumeSortDirection: null,
                   oneHourSortDirection: null,
                   oneDaySortDirection: null,
                   sevenDaySortDirection: null,
+                  athSortDirection: null,
                   holdingsSortDirection: null,
                   roiSortDirection: null,
                   amountInvestedSortDirection: null,
@@ -508,8 +506,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  createPortfolio: (accountKey, payload) =>
-    dispatch(createPortfolio(accountKey, payload))
+  createPortfolio: (accountKey, payload) => dispatch(createPortfolio(accountKey, payload)),
 });
 
 export default connect(
