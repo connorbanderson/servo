@@ -6,9 +6,22 @@ const default_state = {
   user: null,
   loginError: null,
   signUpError: null
-};
+}
 
-export default (state = default_state, action) => {
+const no_internet_default_state = {
+  isAuthed: true, 
+  loading: false,
+  user: {
+    displayName: 'Connor Anderson',
+    email: 'connorbanderson@gmail.com',
+    photoURL: "https://lh4.googleusercontent.com/-ovUjVHEEXlk/AAAAAAAAAAI/AAAAAAAAABc/2aIVRxMbK-M/photo.jpg",
+    uid: "gvwezOk2z4VMPMRRJwXXt8DFZjr1"
+  },
+  loginError: null,
+  signUpError: null
+}
+
+export default (state = no_internet_default_state, action) => {
   switch (action.type) {
     case "SIGN_UP_REQUEST":
       return {

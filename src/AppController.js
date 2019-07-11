@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+// Redux Imports
+import { authListener } from "./Redux/Actions/auth";
+// Route Imports
 import Login from "./Routes/NoAuth/Login/login";
 import AuthController from "./Routes/Auth/AuthController";
-import { authListener } from "./Redux/Actions/auth";
+
 class AppController extends Component {
   componentDidMount() {
     const { authListener } = this.props;
-    authListener();
+    //authListener();
   }
   render() {
     const { isAuthed } = this.props;

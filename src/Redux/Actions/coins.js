@@ -10,6 +10,7 @@ export const fetchTop250 = () => dispatch => {
     .then(res => res.json())
     .then(
       coins => {
+        console.log(coins)
         dispatch({
           type: "UPDATE_TOP_250",
           payload: coins

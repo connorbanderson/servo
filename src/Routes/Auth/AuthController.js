@@ -13,19 +13,19 @@ class AuthController extends Component {
   }
   render() {
     const { portfolios, coins } = this.props;
-    if (portfolios === null || coins.top250.length === 0) return <Loader />
+    if (portfolios === null || coins.top250.length === 0) return <Loader />;
     else return <LoggedInView />;
   }
 }
 
 const mapStateToProps = state => ({
   portfolios: state.portfolios.portfolios,
-  coins: state.coins,
+  coins: state.coins
 });
 
 const mapDispatchToProps = dispatch => ({
   portfolioListner: payload => dispatch(portfolioListner(payload)),
-  fetchTop250: payload => dispatch(fetchTop250(payload)),
+  fetchTop250: payload => dispatch(fetchTop250(payload))
 });
 
 export default connect(

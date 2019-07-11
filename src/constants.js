@@ -4,21 +4,30 @@ export const AUTH_ERRORS = {
   WEAK_PASSWORD: "auth/weak-password",
   WRONG_PASSWORD: "auth/wrong-password",
   USER_NOT_FOUND: "auth/user-not-found"
-}
+};
 
 export const AUTH_ERROR_MESSAGES = {
   [AUTH_ERRORS.BAD_EMAIL]: "The email address is badly formatted.",
   [AUTH_ERRORS.WEAK_PASSWORD]: "Password should be at least 6 characters",
-  [AUTH_ERRORS.USER_NOT_FOUND]: "The password is invalid or the user does not have a password.",
-  [AUTH_ERRORS.WRONG_PASSWORD]: "The password is invalid or the user does not have a password.",
-  [AUTH_ERRORS.EMAIL_IN_USE]: "The email address is already in use by another account.",
-}
+  [AUTH_ERRORS.USER_NOT_FOUND]:
+    "The password is invalid or the user does not have a password.",
+  [AUTH_ERRORS.WRONG_PASSWORD]:
+    "The password is invalid or the user does not have a password.",
+  [AUTH_ERRORS.EMAIL_IN_USE]:
+    "The email address is already in use by another account."
+};
 
-export const PASSWORD_REGX = /.{6,}$/
-export const PORTFOLIO_NAME_REGX = /.{1,}$/
+export const CLIENT_VALIDATION_ERRORS = {
+  PASSWORD_LENGTH: "Password should be at least 6 characters",
+  INVALID_EMAIL: "Please enter a valid email address"
+};
+
+export const PASSWORD_REGX = /.{6,}$/;
+export const PORTFOLIO_NAME_REGX = /.{1,}$/;
 export const EMAIL_REGX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-export const ONLY_INT_REGX = /\D/g
-const AVATAR_PALETTE_400 = {
+export const ONLY_INT_REGX = /\D/g;
+
+export const AVATAR_PALETTE_400 = {
   0: "#ef5350",
   1: "#EC407A",
   2: "#AB47BC",
@@ -33,9 +42,9 @@ const AVATAR_PALETTE_400 = {
   11: "#FFA726",
   12: "#FF7043",
   13: "#78909C"
-}
+};
 
-const AVATAR_PALETTE_600 = {
+export const AVATAR_PALETTE_600 = {
   0: "#e53935",
   1: "#D81B60",
   2: "#8E24AA",
@@ -50,4 +59,4 @@ const AVATAR_PALETTE_600 = {
   11: "#FB8C00",
   12: "#F4511E",
   13: "#546E7A"
-}
+};

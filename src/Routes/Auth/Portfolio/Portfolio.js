@@ -66,8 +66,8 @@ class Portfolio extends Component {
       match,
       fetchTop250
     } = this.props;
-    authListener();
-    fetchTop250();
+    //authListener();
+    //fetchTop250();
   }
 
   state = {
@@ -949,7 +949,7 @@ const mapDispatchToProps = dispatch => ({
   addCoinToPortfolio: payload => dispatch(addCoinToPortfolio(payload)),
   editPortfolioCoin: payload => dispatch(editPortfolioCoin(payload)),
   deleteCoinFromPortfolio: payload =>
-    dispatch(deleteCoinFromPortfolio(payload)),
+  dispatch(deleteCoinFromPortfolio(payload)),
   portfolioListner: payload => dispatch(portfolioListner(payload)),
   editPortfolioName: payload => dispatch(editPortfolioName(payload)),
   deletePortfolio: payload => dispatch(deletePortfolio(payload))

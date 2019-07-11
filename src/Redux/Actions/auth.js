@@ -15,6 +15,7 @@ import { AUTH_ERRORS, AUTH_ERROR_MESSAGES } from "../../constants.js";
 export const authListener = () => dispatch => {
   fire.auth().onAuthStateChanged(user => {
     if (user) {
+      console.log("user", user);
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: user
@@ -30,7 +31,7 @@ export const authListener = () => dispatch => {
 // **  Firebase Actions - One-way firebase calls without any dispatch's directly triggered**
 
 export const logout = () => dispatch => {
-  console.log('CALLING LOGOIUT');
+  console.log("CALLING LOGOIUT");
   fire.auth().signOut();
 };
 
@@ -64,7 +65,7 @@ export const signUp = (email, password) => dispatch => {
     .createUserWithEmailAndPassword(email, password)
     .then()
     .catch(error => {
-      console.log('SIGNUP ERROR', error);
+      console.log("SIGNUP ERROR", error);
       dispatch({
         type: "SIGN_UP_FAIL",
         payload: AUTH_ERROR_MESSAGES[error.code]
@@ -90,12 +91,12 @@ export const login = (email, password) => dispatch => {
 
 export const clearLoginError = () => dispatch => {
   dispatch({
-    type: "CLEAR_LOGIN_ERROR",
+    type: "CLEAR_LOGIN_ERROR"
   });
 };
 
 export const clearSignUpError = () => dispatch => {
   dispatch({
-    type: "CLEAR_SIGN_UP_ERROR",
+    type: "CLEAR_SIGN_UP_ERROR"
   });
 };

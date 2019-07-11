@@ -28,10 +28,6 @@ export const portfolioListner = () => (dispatch, getState) => {
     });
 };
 
-/*
-
-*/
-
 // Posts
 export const createPortfolio = (accountKey, payload) => {
   console.log("Trying to createPortfolio", accountKey, payload);

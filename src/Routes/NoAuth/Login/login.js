@@ -8,19 +8,18 @@ import {
   clearSignUpError,
   authListener
 } from "../../../Redux/Actions/auth";
-import { makeStyles } from "@material-ui/styles";
-import GradientButton from "../../../Components/GradientButton";
-import { validateEmail, validatePassword } from "../../../utils";
 // Frontend Lib Imports
+
+// Util Import
+import { validateEmail, validatePassword } from "../../../utils";
+
+// Constants Import
+import { CLIENT_VALIDATION_ERRORS } from "../../../constants";
 
 // Style Imports
 import "./login.scss";
 
 //SVG Imports
-import circle from "./circle.svg";
-import circleWhite from "./circleWhite.svg";
-import triangle from "./triangle.svg";
-import triangleWhite from "./triangleWhite.svg";
 import logo from "./logo.svg";
 import googleIcon from "./googleIcon.svg";
 import circuitboard from "./circuitboard.svg";
@@ -28,11 +27,12 @@ import circuitboardWhite from "./circuitboardWhite.svg";
 
 //Component Imports
 import Input from "../../../Components/Input/input.js";
+import GradientButton from "../../../Components/GradientButton";
 
 class Login extends Component {
   componentDidMount() {
     const { authListener } = this.props;
-    authListener();
+    //authListener();
   }
 
   state = {
@@ -80,10 +80,6 @@ class Login extends Component {
   render() {
     const {
       isLogin,
-      signupEmail,
-      signupPassword,
-      loginEmail,
-      loginPassword,
       loginEmailError,
       loginPasswordError,
       signupPasswordError,
@@ -92,8 +88,6 @@ class Login extends Component {
     const {
       loginWithGoogle,
       auth,
-      signUp,
-      login,
       clearLoginError,
       clearSignUpError
     } = this.props;
@@ -187,7 +181,7 @@ class Login extends Component {
               ]}
               error={loginEmailError || auth.loginError !== null}
               helperText={
-                loginEmailError ? "Please enter a valid email address" : null
+                loginEmailError ? CLIENT_VALIDATION_ERRORS['INVALID_EMAIL'] : null
               }
               clearError={() => [
                 this.setState({
@@ -211,7 +205,7 @@ class Login extends Component {
                 error={loginPasswordError || auth.loginError !== null}
                 helperText={
                   loginPasswordError
-                    ? "Password should be at least 6 characters"
+                    ? CLIENT_VALIDATION_ERRORS['PASSWORD_LENGTH']
                     : auth.loginError
                 }
                 clearError={() => [
@@ -283,7 +277,9 @@ class Login extends Component {
               ]}
               error={signupEmailError || auth.signUpError !== null}
               helperText={
-                signupEmailError ? "Please enter a valid email address" : null
+                signupEmailError
+                  ? CLIENT_VALIDATION_ERRORS['INVALID_EMAIL']
+                  : null
               }
               clearError={() => [
                 this.setState({
@@ -292,6 +288,7 @@ class Login extends Component {
                 }),
                 clearSignUpError()
               ]}
+              ss
             />
             <div className="errorTextInputWrapper">
               <Input
@@ -308,7 +305,7 @@ class Login extends Component {
                 error={signupPasswordError || auth.signUpError !== null}
                 helperText={
                   signupPasswordError
-                    ? "Password should be at least 6 characters"
+                    ? CLIENT_VALIDATION_ERRORS['PASSWORD_LENGTH']
                     : auth.signUpError
                 }
                 clearError={() => [
