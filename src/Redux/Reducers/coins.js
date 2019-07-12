@@ -73,7 +73,7 @@ const NO_INTERNET_DEFAULT_STATE = {
   ]
 };
 
-export default (state = NO_INTERNET_DEFAULT_STATE, action) => {
+export default (state = DEFAULT_STATE, action) => {
   switch (action.type) {
     case "UPDATE_TOP_250":
       return {

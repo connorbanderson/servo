@@ -32,7 +32,7 @@ import GradientButton from "../../../Components/GradientButton";
 class Login extends Component {
   componentDidMount() {
     const { authListener } = this.props;
-    //authListener();
+    authListener();
   }
 
   state = {

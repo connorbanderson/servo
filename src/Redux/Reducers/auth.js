@@ -21,7 +21,7 @@ const no_internet_default_state = {
   signUpError: null
 }
 
-export default (state = no_internet_default_state, action) => {
+export default (state = default_state, action) => {
   switch (action.type) {
     case "SIGN_UP_REQUEST":
       return {

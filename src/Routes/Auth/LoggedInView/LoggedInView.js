@@ -110,6 +110,7 @@ class LoggedInView extends Component {
                 portfolio={portfolios[portfolioKey]}
                 portfolioKey={portfolioKey}
                 coins={coins}
+                handleRedirect={this.handleRedirect}
               />
             ))}
 

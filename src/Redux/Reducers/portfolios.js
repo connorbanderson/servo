@@ -34,7 +34,7 @@ const NO_INTERNET_DEFAULT_STATE = {
   selectedPortfolio: null
 };
 
-export default (state = NO_INTERNET_DEFAULT_STATE, action) => {
+export default (state = DEFAULT_STATE, action) => {
   switch (action.type) {
     case "UPDATE_PORTFOLIOS":
       return {
