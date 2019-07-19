@@ -55,7 +55,6 @@ import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 // Style
 import "./Portfolio.scss";
-import "../../../index.scss";
 
 class Portfolio extends Component {
   componentWillMount() {

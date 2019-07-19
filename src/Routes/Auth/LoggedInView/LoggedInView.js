@@ -7,15 +7,15 @@ import "./LoggedInView.scss";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import Table from "../../../Components/Table";
+import Modal from "../../../Components/Modal";
 import GradientButton from "../../../Components/GradientButton";
 import ConditionalTooltip from "../../../Components/ConditionalTooltip";
-import Modal from "@material-ui/core/Modal";
 import Input from "../../../Components/Input/input.js";
 import Add from "@material-ui/icons/Add";
 import Navbar from "../../../Components/Navbar";
 import CurrencyButton from "../../../Components/CurrencyButton";
 import PortfolioCard from "../../../Components/PortfolioCard";
-
+import '../../../styles/global.scss'
 class LoggedInView extends Component {
   state = {
     sortedCoins: null,
@@ -92,6 +92,7 @@ class LoggedInView extends Component {
                     color="primary"
                     onClick={() => this.toggleAddModal()}
                     disabled={hasCreatedMaxPortfolios}
+                    className='servoButton--secondary'
                   >
                     <Add style={{ fontSize: "22px", color: "#E94057" }} />
                     <span
@@ -163,41 +164,27 @@ class LoggedInView extends Component {
           </div>
 
           <Modal
-            aria-labelledby="simple-modal-title"
-            aria-describedby="simple-modal-description"
-            open={isAddModalVisible}
-            onClose={() => this.toggleAddModal()}
-            className="modalContainer"
-          >
-            <div className="defaultModal">
-              <div className="fullWidth flex">
-                <b> New Portfolio </b>
-              </div>
-              <Input
-                autoFocus
-                label="Name"
-                value={newPortfolioName}
-                onChange={name => this.handleUpdateNewPortfolioName(name)}
-                handleSubmit={e => [
-                  e.preventDefault(),
-                  this.handleAddNewPortfolio()
-                ]}
-                error={null}
-              />
-              <div
-                className="fullWidth flexRight"
-                style={{ marginTop: "10px" }}
-              >
-                <GradientButton
-                  onClick={() => this.handleAddNewPortfolio()}
-                  variant="contained"
-                  color="purple"
-                >
-                  Add
-                </GradientButton>
-              </div>
-            </div>
-          </Modal>
+            isVisible={isAddModalVisible}
+            toggleModal={()=>this.setState({ isAddModalVisible: !isAddModalVisible})}
+            title="Add a New Portfolio"
+            >
+            <Input
+              color="secondary"
+              autoFocus
+              label="Name"
+              value={newPortfolioName}
+              onChange={name => this.handleUpdateNewPortfolioName(name)}
+              handleSubmit={e => [
+                e.preventDefault(),
+                this.handleAddNewPortfolio()
+              ]}
+              error={null}
+              className='servoInput--primary'
+            />
+            </Modal>
+
+
+
         </div>
       </div>
     );
@@ -220,3 +207,43 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(LoggedInView);
+
+
+/*
+<MaterialModal
+  aria-labelledby="simple-modal-title"
+  aria-describedby="simple-modal-description"
+  open={isAddModalVisible}
+  onClose={() => this.toggleAddModal()}
+  className="modalContainer"
+>
+  <div className="defaultModal">
+    <div className="fullWidth flex">
+      <b> New Portfolio </b>
+    </div>
+    <Input
+      autoFocus
+      label="Name"
+      value={newPortfolioName}
+      onChange={name => this.handleUpdateNewPortfolioName(name)}
+      handleSubmit={e => [
+        e.preventDefault(),
+        this.handleAddNewPortfolio()
+      ]}
+      error={null}
+    />
+    <div
+      className="fullWidth flexRight"
+      style={{ marginTop: "10px" }}
+    >
+      <GradientButton
+        onClick={() => this.handleAddNewPortfolio()}
+        variant="contained"
+        color="purple"
+      >
+        Add
+      </GradientButton>
+    </div>
+  </div>
+</MaterialModal>
+*/

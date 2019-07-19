@@ -1,5 +1,27 @@
 $maxWidth: 1300px;
+$primary: #E94057;
+$primaryLight: #f6b2bb;
 
+.servoButton{
+  &--secondary{
+    background: white !important;
+    color: $primaryLight !important;
+    &__title{
+
+    }
+  }
+  &--primary{
+    background: #8E2DE2;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(45deg, #E94057 30%, #F27121 90%);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(45deg, #E94057 30%, #F27121 90%);
+    &__title{
+      color: white !important;
+    }
+    &__icon{
+      color: white !important;
+    }
+  }
+}
 
 
 body, #root {
@@ -103,8 +125,8 @@ body, #root {
   margin-right: 10px;
 }
 
+
 .primaryGradientText {
-  font-size: 72px;
   background: -webkit-linear-gradient(45deg, #E94057 30%, #F27121);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
