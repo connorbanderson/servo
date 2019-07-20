@@ -32,7 +32,6 @@ import GradientButton from "../../../Components/GradientButton";
 import Autocomplete from "../../../Components/Autocomplete";
 import Input from "../../../Components/Input/input.js";
 import DeleteIcon from "@material-ui/icons/Delete";
-
 import Paper from "@material-ui/core/Paper";
 import Modal from "@material-ui/core/Modal";
 import {
@@ -52,24 +51,11 @@ import ArrowDropUp from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 import KeyboardBackspace from "@material-ui/icons/KeyboardBackspace";
 import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
 // Style
 import "./Portfolio.scss";
 import "../../../index.scss";
 
 class Portfolio extends Component {
-  componentWillMount() {
-    const {
-      authListener,
-      portfolioListner,
-      user,
-      match,
-      fetchTop250
-    } = this.props;
-    //authListener();
-    //fetchTop250();
-  }
-
   state = {
     isAddModalVisible: false,
     isEditModalVisible: false,
@@ -311,29 +297,14 @@ class Portfolio extends Component {
     return _.orderBy(payload, "total", "desc");
   };
 
-  longestSubsequence = (x, y) => {
-    let subsequenceLength = 0;
-    if (x.length === 0 || y.length === 0) return subsequenceLength;
-    const xSubset = [...x].slice(1);
-    const ySubset = [...y].slice(1);
-    if (x[0] === y[0]) {
-      subsequenceLength = 1 + this.longestSubsequence(xSubset, ySubset);
-    } else {
-      const pathOne = this.longestSubsequence(x, ySubset);
-      const pathTwo = this.longestSubsequence(xSubset, y);
-      subsequenceLength = pathOne >= pathTwo ? pathOne : pathTwo;
-    }
-    return subsequenceLength;
-  };
-
   render() {
+    console.log('this is portfolio!!')
     const {
       portfolios,
       user,
       portfolioListner,
       coins,
       isAuthed,
-      deletePortfolio,
       match
     } = this.props;
     const {
@@ -369,6 +340,7 @@ class Portfolio extends Component {
       portfolios.portfolios !== null
         ? portfolios.portfolios[`-${this.props.match.params.id}`]
         : null;
+
     if (selectedPortfolio === null) return <Loader />;
     if (user !== null && portfolios.portfolios !== null && coins.length > 0) {
       userCoinTableList = this.generatePortfolioTable(selectedPortfolio);
@@ -394,11 +366,10 @@ class Portfolio extends Component {
         coins
       );
     }
+
     if (selectedPortfolio === undefined || !isAuthed)
       return <Redirect to="/" />;
     if (redirectUrl !== null) return <Redirect to={redirectUrl} />;
-
-    const result = this.longestSubsequence("abc", "aedace");
 
     return (
       <div className="portfolioPageWrapper flexColStart">
@@ -549,7 +520,7 @@ class Portfolio extends Component {
             <span className="sevenDayTitle">Past 7 Days</span>
             {coins.length > 0 && sevenDayPriceData.length > 0 ? (
               <ResponsiveContainer width="100%" height={250}>
-                <LineChart width={"100%"} height={250} data={sevenDayPriceData}>
+                <LineChart height={250} data={sevenDayPriceData}>
                   <Line
                     type="monotone"
                     dataKey="Total Holdings"
@@ -795,9 +766,9 @@ class Portfolio extends Component {
                 onClick={() => [
                   deletePortfolio({
                     accountKey: user.uid,
-                    portfolioKey: `-${match.params.id}`,
+                    portfolioKey: `-${match.params.id}`
                   }),
-                  this.setState({isEditModalVisible: false})
+                  this.setState({ isEditModalVisible: false })
                 ]}
                 variant="outlined"
                 color="secondary"
@@ -816,12 +787,6 @@ class Portfolio extends Component {
             </div>
           </div>
         </Modal>
-
-
-
-
-
-
 
         {coinToEdit !== null && coinToEdit !== undefined && (
           <Modal
@@ -949,10 +914,9 @@ const mapDispatchToProps = dispatch => ({
   addCoinToPortfolio: payload => dispatch(addCoinToPortfolio(payload)),
   editPortfolioCoin: payload => dispatch(editPortfolioCoin(payload)),
   deleteCoinFromPortfolio: payload =>
-  dispatch(deleteCoinFromPortfolio(payload)),
+    dispatch(deleteCoinFromPortfolio(payload)),
   portfolioListner: payload => dispatch(portfolioListner(payload)),
-  editPortfolioName: payload => dispatch(editPortfolioName(payload)),
-  deletePortfolio: payload => dispatch(deletePortfolio(payload))
+  editPortfolioName: payload => dispatch(editPortfolioName(payload))
 });
 
 export default connect(

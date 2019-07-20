@@ -40,7 +40,7 @@ class LoggedInView extends Component {
 
   handleAddNewPortfolio = () => {
     const { newPortfolioName } = this.state;
-    const { createPortfolio, user } = this.props;
+    const { user } = this.props;
     const payload = {
       name: newPortfolioName,
       coins: {
@@ -52,6 +52,7 @@ class LoggedInView extends Component {
       }
     };
     createPortfolio(user.uid, payload);
+    this.setState({ isAddModalVisible: false });
   };
 
   handleUpdateNewPortfolioName = name => {
@@ -211,10 +212,7 @@ const mapStateToProps = state => ({
   isAuthed: state.auth.isAuthed
 });
 
-const mapDispatchToProps = dispatch => ({
-  createPortfolio: (accountKey, payload) =>
-    dispatch(createPortfolio(accountKey, payload))
-});
+const mapDispatchToProps = dispatch => ({});
 
 export default connect(
   mapStateToProps,

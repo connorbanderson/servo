@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Loader from "../../Components/Loader/";
+import Portfolio from "../../Routes/Auth/Portfolio/Portfolio";
 import LoggedInView from "./LoggedInView/LoggedInView";
 import { portfolioListner } from "../../Redux/Actions/portfolios";
 import { fetchTop250 } from "../../Redux/Actions/coins";
+import { Route } from "react-router-dom";
 
 class AuthController extends Component {
   componentDidMount() {
@@ -14,7 +16,12 @@ class AuthController extends Component {
   render() {
     const { portfolios, coins } = this.props;
     if (portfolios === null || coins.top250.length === 0) return <Loader />;
-    else return <LoggedInView />;
+    return (
+      <>
+        <Route exact path="/" component={LoggedInView} />
+        <Route path="/portfilio/:id" component={Portfolio} />
+      </>
+    );
   }
 }
 

@@ -9,17 +9,20 @@ import AuthController from "./Routes/Auth/AuthController";
 class AppController extends Component {
   componentDidMount() {
     const { authListener } = this.props;
-    //authListener();
+    authListener();
   }
   render() {
-    const { isAuthed } = this.props;
+    const { isAuthed, initialUserCheck } = this.props;
+    console.log('do you have scope??', this.props)
+    if (!initialUserCheck) return null;
     if (!isAuthed) return <Login />;
     else return <AuthController />;
   }
 }
 
 const mapStateToProps = state => ({
-  isAuthed: state.auth.isAuthed
+  isAuthed: state.auth.isAuthed,
+  initialUserCheck: state.auth.initialUserCheck
 });
 
 const mapDispatchToProps = dispatch => ({

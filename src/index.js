@@ -18,8 +18,6 @@ ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <Route exact path="/" component={AppController} />
-      <Route exact path="/practice" component={Practice} />
-      <Route path="/portfolio/:id" component={Portfolio} />
     </Router>
   </Provider>,
   document.getElementById("root")

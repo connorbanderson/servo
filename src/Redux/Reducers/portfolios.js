@@ -35,6 +35,7 @@ const NO_INTERNET_DEFAULT_STATE = {
 };
 
 export default (state = DEFAULT_STATE, action) => {
+  console.log('Should be updating Portfolio - reducer', action)
   switch (action.type) {
     case "UPDATE_PORTFOLIOS":
       return {
