@@ -1,0 +1,57 @@
+.modalContainer{
+  position: absolute;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.servoModal{
+  position: relative;
+  background-color: white;
+  min-height: 350px;
+  height: auto;
+  width: 450px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 80px 20px 20px 20px;
+  animation: fadeIn 0.3s forwards;
+  &__wave{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: auto;
+  }
+  &__closeButtonWrapper{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  &__closeIcon{
+    color: white;
+  }
+  &__body{
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+  }
+  &__actionFooter{
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  &:focus{
+    outline-width: 0px;
+  }
+}

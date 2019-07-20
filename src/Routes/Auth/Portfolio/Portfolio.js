@@ -53,7 +53,6 @@ import KeyboardBackspace from "@material-ui/icons/KeyboardBackspace";
 import Button from "@material-ui/core/Button";
 // Style
 import "./Portfolio.scss";
-import "../../../index.scss";
 
 class Portfolio extends Component {
   state = {
