@@ -1,3 +1,9 @@
+@import "./variables";
+
+@mixin primaryGradientBackground {
+  background: -webkit-linear-gradient(45deg, $primaryColor 30%, $secondaryColor);
+}
+
 @mixin flex {
   display: flex;
   justify-content: center;
