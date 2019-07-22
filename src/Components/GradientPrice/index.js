@@ -2,7 +2,7 @@ import React from "react";
 
 const GradientPrice = ({ price }) => (
   <h1 style={{ fontSize: "36px" }} className="primaryGradientText">
-    {`$${price}`}
+    {price === '' ? "$ -" : `$${price}`}
   </h1>
 );
 

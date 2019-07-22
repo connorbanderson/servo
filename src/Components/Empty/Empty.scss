@@ -1,0 +1,17 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.empty{
+  @include flexCol;
+  &__image{
+    height: 110px;
+    width: 110px;
+    opacity: .6;
+  }
+  &__text{
+    margin: 10px 0 20px 0;
+    max-width: 70%;
+    font-size: 16px;
+    color: $grey700;
+  }
+}

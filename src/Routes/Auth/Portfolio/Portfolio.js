@@ -30,7 +30,11 @@ import Loader from "../../../Components/Loader";
 import GradientPrice from "../../../Components/GradientPrice";
 import GradientButton from "../../../Components/GradientButton";
 import Autocomplete from "../../../Components/Autocomplete";
+import ArrowStat from "../../../Components/ArrowStat";
 import Input from "../../../Components/Input/input.js";
+import ProfitChart from "../../../Components/ProfitChart";
+
+import SevenDayGraph from "../../../Components/SevenDayGraph";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 import Paper from "@material-ui/core/Paper";
@@ -58,15 +62,9 @@ import "./Portfolio.scss";
 
 class Portfolio extends Component {
   componentWillMount() {
-    const {
-      authListener,
-      portfolioListner,
-      user,
-      match,
-      fetchTop250
-    } = this.props;
-    //authListener();
-    //fetchTop250();
+    const { authListener, fetchTop250 } = this.props;
+    authListener();
+    fetchTop250();
   }
 
   state = {
@@ -398,12 +396,11 @@ class Portfolio extends Component {
     if (redirectUrl !== null) return <Redirect to={redirectUrl} />;
 
     const result = this.longestSubsequence("abc", "aedace");
-
+    const emptyPortfolio = selectedPortfolio.coins === undefined;
     return (
       <div className="portfolioPageWrapper flexColStart">
         <Navbar user={user} />
         <div className="portfolioInnerWrapper">
-          <div style={{ margin: "0 10px" }} className="fullWidth flexLeft" />
           <div
             style={{ margin: "0 10px" }}
             className="fullWidth flexSpaceBetween"
@@ -417,7 +414,6 @@ class Portfolio extends Component {
                 <span style={{ marginLeft: "4px" }}>Back</span>
               </Button>
             </div>
-
             <div style={{ width: "300px", paddingBottom: "10px" }}>
               <Autocomplete
                 style={{ position: "relative", zIndex: 99 }}
@@ -438,93 +434,21 @@ class Portfolio extends Component {
                 </h1>
               </div>
               <div className="flex">
-                <div
-                  style={{ marginLeft: "25px", marginRight: "25px" }}
-                  className="statWrapper"
-                >
-                  <div className="fullWidth flex">
-                    {oneHourPerformance >= 0 ? (
-                      <ArrowDropUp style={{ color: "#81C784" }} />
-                    ) : (
-                      <ArrowDropDown style={{ color: "red" }} />
-                    )}
-                    <span
-                      style={{
-                        color: oneHourPerformance >= 0 ? "#81C784" : "red",
-                        fontSize: "20px"
-                      }}
-                    >
-                      {oneHourPerformance}%
-                    </span>
-                  </div>
-                  <span
-                    style={{
-                      marginTop: "10px",
-                      fontSize: "12px",
-                      opacity: "0.4"
-                    }}
-                  >
-                    1H Performance
-                  </span>
-                </div>
-                <div
-                  style={{ marginLeft: "25px", marginRight: "25px" }}
-                  className="statWrapper"
-                >
-                  <div className="fullWidth flex">
-                    {oneDayPerformance >= 0 ? (
-                      <ArrowDropUp style={{ color: "#81C784" }} />
-                    ) : (
-                      <ArrowDropDown style={{ color: "red" }} />
-                    )}
-                    <span
-                      style={{
-                        color: oneDayPerformance >= 0 ? "#81C784" : "red",
-                        fontSize: "20px"
-                      }}
-                    >
-                      {oneDayPerformance}%
-                    </span>
-                  </div>
-                  <span
-                    style={{
-                      marginTop: "10px",
-                      fontSize: "12px",
-                      opacity: "0.4"
-                    }}
-                  >
-                    24H Performance
-                  </span>
-                </div>
-                <div
-                  style={{ marginLeft: "25px", marginRight: "25px" }}
-                  className="statWrapper"
-                >
-                  <div className="fullWidth flex">
-                    {sevenDayPerformance >= 0 ? (
-                      <ArrowDropUp style={{ color: "#81C784" }} />
-                    ) : (
-                      <ArrowDropDown style={{ color: "red" }} />
-                    )}
-                    <span
-                      style={{
-                        color: sevenDayPerformance >= 0 ? "#81C784" : "red",
-                        fontSize: "20px"
-                      }}
-                    >
-                      {sevenDayPerformance}%
-                    </span>
-                  </div>
-                  <span
-                    style={{
-                      marginTop: "10px",
-                      fontSize: "12px",
-                      opacity: "0.4"
-                    }}
-                  >
-                    7D Performance
-                  </span>
-                </div>
+                <ArrowStat
+                  performance={oneHourPerformance}
+                  emptyPortfolio={emptyPortfolio}
+                  text="1H Performance"
+                />
+                <ArrowStat
+                  performance={oneDayPerformance}
+                  emptyPortfolio={emptyPortfolio}
+                  text="24H Performance"
+                />
+                <ArrowStat
+                  performance={sevenDayPerformance}
+                  emptyPortfolio={emptyPortfolio}
+                  text="7D Performance"
+                />
               </div>
               <div style={{ width: "25%" }} className="flexRight">
                 <GradientPrice price={holdings} />
@@ -544,90 +468,9 @@ class Portfolio extends Component {
             </Paper>
           )}
 
-          <Paper className="portfolio7DayGraphPaper">
-            <span className="sevenDayTitle">Past 7 Days</span>
-            {coins.length > 0 && sevenDayPriceData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart width={"100%"} height={250} data={sevenDayPriceData}>
-                  <Line
-                    type="monotone"
-                    dataKey="Total Holdings"
-                    stroke={
-                      sevenDayPriceData[sevenDayPriceData.length - 1][
-                        "Total Holdings"
-                      ] >= sevenDayPriceData[0]["Total Holdings"]
-                        ? "#81C784"
-                        : "red"
-                    }
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <YAxis
-                    type="number"
-                    domain={["dataMin", "dataMax"]}
-                    hide={true}
-                  />
-                  <XAxis type="category" hide={true} />
-                  <Tooltip
-                    formatter={(value, name, props) => {
-                      return `$${commarize(
-                        parseInt(props.payload["Total Holdings"])
-                      )}`;
-                    }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <span>Loading</span>
-            )}
-          </Paper>
+          <SevenDayGraph coins={coins} data={sevenDayPriceData} />
+          <ProfitChart coins={coins} data={barChartData} />
 
-          <Paper className="portfolioProfitGraphPaper">
-            {coins.length > 0 ? (
-              <ResponsiveContainer width="100%" height={274}>
-                <BarChart
-                  height={250}
-                  data={barChartData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5
-                  }}
-                >
-                  <defs>
-                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="30%" stopColor="#E94057" />
-                      <stop offset="90%" stopColor="#F27121" />
-                    </linearGradient>
-                    <linearGradient id="colorXv" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="30%" stopColor="#a8ff78" />
-                      <stop offset="90%" stopColor="#78ffd6" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="investment" stackId="a" fill="url(#colorUv)" />
-                  <Bar dataKey="profit" stackId="a">
-                    {barChartData.map((coin, index) => {
-                      return (
-                        <Cell
-                          fill={coin.profit >= 0 ? "url(#colorXv)" : "#fcebee"}
-                          fillOpacity={1}
-                          key={`cell-${index}`}
-                        />
-                      );
-                    })}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <span>Loading</span>
-            )}
-          </Paper>
           {userCoinTableList.length > 0 && (
             <div style={{ marginTop: "10px", marginBottom: "10px" }}>
               <Table
@@ -794,9 +637,9 @@ class Portfolio extends Component {
                 onClick={() => [
                   deletePortfolio({
                     accountKey: user.uid,
-                    portfolioKey: `-${match.params.id}`,
+                    portfolioKey: `-${match.params.id}`
                   }),
-                  this.setState({isEditModalVisible: false})
+                  this.setState({ isEditModalVisible: false })
                 ]}
                 variant="outlined"
                 color="secondary"
@@ -815,12 +658,6 @@ class Portfolio extends Component {
             </div>
           </div>
         </Modal>
-
-
-
-
-
-
 
         {coinToEdit !== null && coinToEdit !== undefined && (
           <Modal
@@ -948,7 +785,7 @@ const mapDispatchToProps = dispatch => ({
   addCoinToPortfolio: payload => dispatch(addCoinToPortfolio(payload)),
   editPortfolioCoin: payload => dispatch(editPortfolioCoin(payload)),
   deleteCoinFromPortfolio: payload =>
-  dispatch(deleteCoinFromPortfolio(payload)),
+    dispatch(deleteCoinFromPortfolio(payload)),
   portfolioListner: payload => dispatch(portfolioListner(payload)),
   editPortfolioName: payload => dispatch(editPortfolioName(payload)),
   deletePortfolio: payload => dispatch(deletePortfolio(payload))

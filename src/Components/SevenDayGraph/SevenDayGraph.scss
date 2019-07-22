@@ -1,0 +1,13 @@
+@import "../../styles/variables";
+
+.sevenDayGraph{
+  position: relative;
+  width: calc(50% - 20px);
+  margin: 10px;
+  padding: 20px;
+  &__title{
+    font-size: 18px;
+    font-weight: bold;
+    color: $grey400;
+  }
+}

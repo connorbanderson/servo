@@ -17,6 +17,7 @@ export const portfolioListner = () => (dispatch, getState) => {
     .database()
     .ref(`${auth.user.uid}/portfolios`)
     .on("value", snap => {
+      console.log('PORTFOLIO LISTENER!!!!!');
       snap.forEach(portfolio => {
         const portfolioObject = portfolio.val();
         portfoliosObject[portfolio.key] = portfolioObject;

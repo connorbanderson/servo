@@ -15,24 +15,9 @@ import Add from "@material-ui/icons/Add";
 import Navbar from "../../../Components/Navbar";
 import CurrencyButton from "../../../Components/CurrencyButton";
 import PortfolioCard from "../../../Components/PortfolioCard";
-import '../../../styles/global.scss'
+import "../../../styles/global.scss";
 class LoggedInView extends Component {
   state = {
-    sortedCoins: null,
-    rankingSort: "asc",
-    nameSort: null,
-    priceSort: null,
-    oneHourSort: null,
-    oneDaySort: null,
-    sevenDaySort: null,
-    emptyFilters: {
-      rankingSort: null,
-      nameSort: null,
-      priceSort: null,
-      oneHourSort: null,
-      oneDaySort: null,
-      sevenDaySort: null
-    },
     isAddModalVisible: false,
     newPortfolioName: "",
     redirectUrl: null
@@ -40,18 +25,13 @@ class LoggedInView extends Component {
 
   handleAddNewPortfolio = () => {
     const { newPortfolioName } = this.state;
-    const { createPortfolio, user } = this.props;
+    const { user } = this.props;
     const payload = {
       name: newPortfolioName,
-      coins: {
-        dummyData: {
-          amountInvested: 10000,
-          amountPurchased: 1,
-          coin: "bitcoin"
-        }
-      }
+      coins: {}
     };
     createPortfolio(user.uid, payload);
+    this.setState({ isAddModalVisible: false });
   };
 
   handleUpdateNewPortfolioName = name => {
@@ -69,8 +49,6 @@ class LoggedInView extends Component {
     const { isAddModalVisible, newPortfolioName, redirectUrl } = this.state;
     const hasCreatedMaxPortfolios = Object.keys(portfolios).length >= 2;
     if (redirectUrl !== null) return <Redirect to={redirectUrl} />;
-    //todo: I dont think this check is necessary since we have the auth and app controllers....
-    if (!isAuthed) return <Redirect to="/" />;
     return (
       <div className="App">
         <div className="dashboardWrapper">
@@ -92,7 +70,7 @@ class LoggedInView extends Component {
                     color="primary"
                     onClick={() => this.toggleAddModal()}
                     disabled={hasCreatedMaxPortfolios}
-                    className='servoButton--secondary'
+                    className="servoButton--secondary"
                   >
                     <Add style={{ fontSize: "22px", color: "#E94057" }} />
                     <span
@@ -165,9 +143,11 @@ class LoggedInView extends Component {
 
           <Modal
             isVisible={isAddModalVisible}
-            toggleModal={()=>this.setState({ isAddModalVisible: !isAddModalVisible})}
+            toggleModal={() =>
+              this.setState({ isAddModalVisible: !isAddModalVisible })
+            }
             title="Add a New Portfolio"
-            >
+          >
             <Input
               color="secondary"
               autoFocus
@@ -179,12 +159,9 @@ class LoggedInView extends Component {
                 this.handleAddNewPortfolio()
               ]}
               error={null}
-              className='servoInput--primary'
+              className="servoInput--primary"
             />
-            </Modal>
-
-
-
+          </Modal>
         </div>
       </div>
     );
@@ -207,7 +184,6 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(LoggedInView);
-
 
 /*
 <MaterialModal

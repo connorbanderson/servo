@@ -1,0 +1,23 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.arrowStat{
+  position: relative;
+  @include flexCol;
+  &__stat{
+    font-size: 20px;
+  }
+  &__title{
+    font-size: 12px;
+    color: $grey400;
+    font-weight: lighter;
+  }
+  &__row{
+    width: 100%;
+    @include flex;
+  }
+  &--marginM{
+    margin-left: 25px;
+    margin-right: 25px;
+  }
+}

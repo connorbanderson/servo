@@ -14,9 +14,11 @@ import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import CoinPerformer from "../CoinPerformer";
+import Empty from "../Empty";
 
 const PortfolioCard = ({ portfolio, portfolioKey, coins, handleRedirect }) => {
   const lineChartData = generateSevenDayLineChartData(portfolio, coins);
+  const emptyPortfolio = portfolio.coins === undefined;
   const performancePercentage = generatePerformanceStats(
     portfolio,
     "price_change_percentage_7d_in_currency",
@@ -44,7 +46,7 @@ const PortfolioCard = ({ portfolio, portfolioKey, coins, handleRedirect }) => {
                 <ArrowDropDown style={{ color: styleColor }} />
               )}
               <span style={{ color: styleColor, fontSize: "22px" }}>
-                {Math.abs(performancePercentage)}%
+                {emptyPortfolio ? "-" : Math.abs(performancePercentage)}%
               </span>
             </div>
           </div>
@@ -55,37 +57,38 @@ const PortfolioCard = ({ portfolio, portfolioKey, coins, handleRedirect }) => {
           </div>
         </div>
         <h1 style={{ fontSize: "36px" }} className="primaryGradientText">
-          ${holdings !== "" ? holdings : 0}
+          ${emptyPortfolio ? "-" : holdings}
         </h1>
       </div>
-      <LineChart width={420} height={120} data={lineChartData}>
-        <Line
-          type="monotone"
-          dataKey="Total Holdings"
-          stroke={styleColor}
-          strokeWidth={2}
-          dot={false}
-        />
-        <YAxis type="number" domain={["dataMin", "dataMax"]} hide={true} />
-      </LineChart>
-      {performers.length < 2 && (
-        <div
-          style={{ height: "45px" }}
-          className="fullWidth flexRight marginTM marginBM"
-        />
+      {!emptyPortfolio ? (
+        <LineChart width={420} height={120} data={lineChartData}>
+          <Line
+            type="monotone"
+            dataKey="Total Holdings"
+            stroke={styleColor}
+            strokeWidth={2}
+            dot={false}
+          />
+          <YAxis type="number" domain={["dataMin", "dataMax"]} hide={true} />
+        </LineChart>
+      ) : (
+        <Empty text="Manage your portfolio to add your first coin." />
       )}
-      {performers.length >= 2 && (
+
+      {performers.length >= 1 && (
         <div className="fullWidth flexRight marginTM marginBM">
           <CoinPerformer
             coin={topPerformer}
             text="Top Performer"
             style={{ marginLeft: "30px" }}
           />
-          <CoinPerformer
-            coin={worstPerformer}
-            text="Wost Performer"
-            style={{ marginLeft: "30px" }}
-          />
+          {performers.length >= 2 && (
+            <CoinPerformer
+              coin={worstPerformer}
+              text="Wost Performer"
+              style={{ marginLeft: "30px" }}
+            />
+          )}
         </div>
       )}
       <div className="botActionMenu flexRight">
