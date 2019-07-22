@@ -4,7 +4,7 @@ import { Redirect } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import { connect } from "react-redux";
 import { authListener } from "../../../Redux/Actions/auth";
-import { portFolioTableDisplayKeys } from "../../../constants.js"
+import { portFolioTableDisplayKeys } from "../../../constants.js";
 import {
   portfolioListner,
   addCoinToPortfolio,
@@ -30,6 +30,7 @@ import Table from "../../../Components/Table";
 import Loader from "../../../Components/Loader";
 import GradientPrice from "../../../Components/GradientPrice";
 import GradientButton from "../../../Components/GradientButton";
+import GradientText from "../../../Components/GradientText";
 import Autocomplete from "../../../Components/Autocomplete";
 import ArrowStat from "../../../Components/ArrowStat";
 import Input from "../../../Components/Input/input.js";
@@ -64,6 +65,7 @@ class Portfolio extends Component {
     const { authListener, fetchTop250 } = this.props;
     authListener();
     fetchTop250();
+    console.log("PORTFOLIO DID MOUNT");
   }
 
   state = {
@@ -308,7 +310,7 @@ class Portfolio extends Component {
   };
 
   render() {
-    console.log('this is portfolio!!')
+    console.log("this is portfolio!!");
     const {
       portfolios,
       user,
@@ -381,7 +383,6 @@ class Portfolio extends Component {
       return <Redirect to="/" />;
     if (redirectUrl !== null) return <Redirect to={redirectUrl} />;
 
-    const result = this.longestSubsequence("abc", "aedace");
     const emptyPortfolio = selectedPortfolio.coins === undefined;
     return (
       <div className="portfolioPageWrapper flexColStart">
@@ -412,12 +413,7 @@ class Portfolio extends Component {
           {coins.length > 0 && (
             <Paper className="portfolioTopPaper flexSpaceBetween">
               <div style={{ width: "25%" }} className="flexLeft">
-                <h1
-                  className="primaryGradientText"
-                  style={{ marginRight: "25px", fontSize: "36px" }}
-                >
-                  {selectedPortfolio.name}
-                </h1>
+                <GradientText text={selectedPortfolio.name} />
               </div>
               <div className="flex">
                 <ArrowStat
@@ -445,7 +441,7 @@ class Portfolio extends Component {
                     })
                   }
                   variant="outlined"
-                  color="secondary"
+                  color="primary"
                   style={{ marginLeft: "25px" }}
                 >
                   Edit

@@ -19,7 +19,7 @@ class AuthController extends Component {
     return (
       <>
         <Route exact path="/" component={LoggedInView} />
-        <Route path="/portfilio/:id" component={Portfolio} />
+        <Route path="/portfolio/:id" component={Portfolio} />
       </>
     );
   }

@@ -33,7 +33,7 @@ ReactDOM.render(
   <Provider store={store}>
     <ThemeProvider theme={theme}>
       <Router history={history}>
-        <Route exact path="/" component={AppController} />
+        <Route path="/" component={AppController} />
       </Router>
     </ThemeProvider>
   </Provider>,
