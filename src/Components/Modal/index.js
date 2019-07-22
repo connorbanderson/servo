@@ -17,7 +17,6 @@ const Modal = ({ isVisible, toggleModal, title, children}) => {
       open={isVisible}
       onClose={() => toggleModal()}
       className="modalContainer"
-      noFocus
     >
       <div className='servoModal'>
         <img src={modalWave} className='servoModal__wave' alt='Servo Modal Top Wave' />
