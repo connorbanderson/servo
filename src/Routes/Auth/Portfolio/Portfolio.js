@@ -310,7 +310,6 @@ class Portfolio extends Component {
   };
 
   render() {
-    console.log("this is portfolio!!");
     const {
       portfolios,
       user,
