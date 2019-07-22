@@ -27,6 +27,9 @@ export const PORTFOLIO_NAME_REGX = /.{1,}$/;
 export const EMAIL_REGX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 export const ONLY_INT_REGX = /\D/g;
 
+export const MATERIAL_PRIMARY_THEME_COLOR = "#406de9";
+export const MATERIAL_SECONDARY_THEME_COLOR = "#E94057";
+
 export const AVATAR_PALETTE_400 = {
   0: "#ef5350",
   1: "#EC407A",

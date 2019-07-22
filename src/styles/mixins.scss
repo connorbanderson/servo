@@ -1,7 +1,7 @@
 @import "./variables";
 
 @mixin primaryGradientBackground {
-  background: -webkit-linear-gradient(45deg, $primaryColor 30%, $secondaryColor);
+  background: -webkit-linear-gradient(45deg, $primaryColor 30%, $primaryColor2);
 }
 
 @mixin flex {

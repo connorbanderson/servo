@@ -8,7 +8,7 @@ import * as serviceWorker from "./serviceWorker";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import { purple } from "@material-ui/core/colors";
-
+import { MATERIAL_PRIMARY_THEME_COLOR, MATERIAL_SECONDARY_THEME_COLOR } from './constants'
 // Components
 import AppController from "./AppController";
 import Portfolio from "./Routes/Auth/Portfolio/Portfolio";
@@ -19,8 +19,8 @@ const store = configureStore();
 
 const theme = createMuiTheme({
   palette: {
-    primary: { main: "#406de9" },
-    secondary: { main: "#E94057" }
+    primary: { main: MATERIAL_PRIMARY_THEME_COLOR },
+    secondary: { main: MATERIAL_SECONDARY_THEME_COLOR }
   },
   typography: {
     fontFamily: [
