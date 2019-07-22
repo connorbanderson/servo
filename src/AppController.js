@@ -13,7 +13,6 @@ class AppController extends Component {
   }
   render() {
     const { isAuthed, initialUserCheck } = this.props;
-    console.log('do you have scope??', this.props)
     if (!initialUserCheck) return null;
     if (!isAuthed) return <Login />;
     else return <AuthController />;

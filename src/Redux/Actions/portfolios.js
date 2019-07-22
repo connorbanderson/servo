@@ -11,9 +11,7 @@ import fire from "../../fire";
 // there is a change in data.
 
 export const portfolioListner = () => (dispatch, getState) => {
-  console.log('This is portfoliio listern')
   const { auth } = getState();
-  console.log('Auth...', auth)
   fire
     .database()
     .ref(`${auth.user.uid}/portfolios`)

@@ -42,7 +42,6 @@ class Navbar extends Component {
     const { anchorEl } = this.state;
     const { user, logout } = this.props;
     const avatarColorId =  user.uid.replace(ONLY_INT_REGX, '') % 14
-    console.log('this should be a avatarColorId', avatarColorId);
     return (
       <nav className="dashboardNavbar">
         <div className="navbarInnerWrapper">

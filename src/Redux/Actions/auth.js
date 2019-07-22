@@ -15,7 +15,7 @@ import { AUTH_ERRORS, AUTH_ERROR_MESSAGES } from "../../constants.js";
 export const authListener = () => dispatch => {
   fire.auth().onAuthStateChanged(user => {
     if (user) {
-      console.log("USER EXISTS!!!", user);
+      console.log("USER! - ", user);
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: user

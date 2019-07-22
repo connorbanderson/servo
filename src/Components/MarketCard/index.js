@@ -10,7 +10,6 @@ import {
 } from "recharts";
 
 const MarketCard = ({ coin }) => {
-  console.log(coin);
   const lineColor = coin.price_change_percentage_7d_in_currency >= 0 ? '#4CAF50' : '#E91E63';
   return(
     <div key={coin.name} className="cryptoCard">
