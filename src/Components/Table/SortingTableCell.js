@@ -4,7 +4,6 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 
 const SortingTableCell = ({ sortLabel, sortKey, sortKeyString, dataKey, handleSort}) => (
   <TableCell
-    key={`${sortKeyString}Cell`}
     sortDirection={
       sortKey !== null
         ? sortKey === "asc"

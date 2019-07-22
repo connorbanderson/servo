@@ -34,7 +34,7 @@ const PortfolioCard = ({ portfolio, portfolioKey, coins, handleRedirect }) => {
   const styleColor = styleRedGreen(performancePercentage);
   const holdings = commarize(calculateHoldings(portfolio, coins));
   return (
-    <Paper className="portfolioPaper">
+    <Paper key={`portfolioCard-${portfolioKey}`} className="portfolioPaper">
       <div style={{ marginBottom: "15px" }} className="flexSpaceBetweenStart">
         <div className="flexColLeft">
           <div className="flexLeft">

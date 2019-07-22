@@ -110,7 +110,7 @@ class SortingTable extends Component {
     const { data, dataDisplayKeys, presetFilters, handleEdit } = this.props;
     const sortedData = _.orderBy(data, [dataOrderKey], [newSortDirection]);
     return (
-      <Paper style={{width: '100%'}} className="paperTableWrapper">
+      <Paper style={{ width: "100%" }} className="paperTableWrapper">
         <Table style={{ width: "100%" }} size="small">
           <TableHead className="customTableHead">
             <TableRow>
@@ -323,7 +323,7 @@ class SortingTable extends Component {
                   ? (coin.circulating_supply / coin.total_supply) * 100
                   : "infinity";
               return (
-                <TableRow key={coin.portfolioId}>
+                <TableRow key={coin.id}>
                   {dataDisplayKeys.market_cap_rank && (
                     <TableCell component="th" scope="row">
                       {coin.market_cap_rank}

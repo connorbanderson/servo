@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
-import _ from "lodash";
 import { connect } from "react-redux";
 import { createPortfolio } from "../../../Redux/Actions/portfolios";
 import { dashboardTableDisplayKeys } from "../../../constants";
@@ -10,7 +9,6 @@ import Paper from "@material-ui/core/Paper";
 import AuthedLayout from "../../../Components/AuthedLayout";
 import Table from "../../../Components/Table";
 import Modal from "../../../Components/Modal";
-import GradientButton from "../../../Components/GradientButton";
 import ConditionalTooltip from "../../../Components/ConditionalTooltip";
 import Input from "../../../Components/Input/input.js";
 import Add from "@material-ui/icons/Add";
@@ -83,6 +81,7 @@ class LoggedInView extends Component {
             </div>
             {Object.keys(portfolios).map(portfolioKey => (
               <PortfolioCard
+                key={`portfolioCard-${portfolioKey}`}
                 portfolio={portfolios[portfolioKey]}
                 portfolioKey={portfolioKey}
                 coins={coins}
