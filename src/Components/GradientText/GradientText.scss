@@ -1,0 +1,11 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.gradientText{
+  background: -webkit-linear-gradient(45deg, $primaryColor 30%, #F27121);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  &--medium{
+    font-size: 36px;
+  }
+}
