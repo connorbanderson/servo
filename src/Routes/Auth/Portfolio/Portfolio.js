@@ -4,6 +4,7 @@ import { Redirect } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import { connect } from "react-redux";
 import { authListener } from "../../../Redux/Actions/auth";
+import { portFolioTableDisplayKeys } from "../../../constants.js"
 import {
   portfolioListner,
   addCoinToPortfolio,
@@ -463,22 +464,7 @@ class Portfolio extends Component {
                   this.toggleEditModal(coinToEdit)
                 }
                 data={userCoinTableList}
-                dataDisplayKeys={{
-                  market_cap_rank: false,
-                  name: true,
-                  current_price: true,
-                  price_change_percentage_1h_in_currency: true,
-                  price_change_percentage_24h_in_currency: true,
-                  price_change_percentage_7d_in_currency: true,
-                  circulating_supply: false,
-                  market_cap: false,
-                  sparkline_in_7d: true,
-                  roi: true,
-                  holdings: true,
-                  amountPurchased: true,
-                  amountInvested: true,
-                  edit: true
-                }}
+                dataDisplayKeys={portFolioTableDisplayKeys}
                 presetFilters={{
                   rankingSortDirection: null,
                   nameSortDirection: null,

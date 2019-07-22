@@ -60,3 +60,39 @@ export const AVATAR_PALETTE_600 = {
   12: "#F4511E",
   13: "#546E7A"
 };
+
+export const portFolioTableDisplayKeys = {
+  market_cap_rank: false,
+  name: true,
+  current_price: true,
+  price_change_percentage_1h_in_currency: true,
+  price_change_percentage_24h_in_currency: true,
+  price_change_percentage_7d_in_currency: true,
+  circulating_supply: false,
+  market_cap: false,
+  sparkline_in_7d: true,
+  roi: true,
+  holdings: true,
+  amountPurchased: true,
+  amountInvested: true,
+  edit: true
+};
+
+export const dashboardTableDisplayKeys = {
+  market_cap_rank: true,
+  name: true,
+  current_price: true,
+  total_volume: true,
+  price_change_percentage_1h_in_currency: true,
+  price_change_percentage_24h_in_currency: true,
+  price_change_percentage_7d_in_currency: true,
+  circulating_supply: true,
+  ath_change_percentage: true,
+  market_cap: false,
+  sparkline_in_7d: true,
+  roi: false,
+  holdings: false,
+  amountPurchased: false,
+  amountInvested: false,
+  edit: false
+};

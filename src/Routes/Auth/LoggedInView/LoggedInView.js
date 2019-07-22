@@ -3,9 +3,11 @@ import { Redirect } from "react-router-dom";
 import _ from "lodash";
 import { connect } from "react-redux";
 import { createPortfolio } from "../../../Redux/Actions/portfolios";
+import { dashboardTableDisplayKeys } from "../../../constants";
 import "./LoggedInView.scss";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
+import AuthedLayout from "../../../Components/AuthedLayout";
 import Table from "../../../Components/Table";
 import Modal from "../../../Components/Modal";
 import GradientButton from "../../../Components/GradientButton";
@@ -16,6 +18,7 @@ import Navbar from "../../../Components/Navbar";
 import CurrencyButton from "../../../Components/CurrencyButton";
 import PortfolioCard from "../../../Components/PortfolioCard";
 import "../../../styles/global.scss";
+
 class LoggedInView extends Component {
   state = {
     isAddModalVisible: false,
@@ -26,11 +29,11 @@ class LoggedInView extends Component {
   handleAddNewPortfolio = () => {
     const { newPortfolioName } = this.state;
     const { user } = this.props;
-    const payload = {
+    const portfolioInfo = {
       name: newPortfolioName,
       coins: {}
     };
-    createPortfolio(user.uid, payload);
+    createPortfolio(user.uid, portfolioInfo);
     this.setState({ isAddModalVisible: false });
   };
 
@@ -50,40 +53,34 @@ class LoggedInView extends Component {
     const hasCreatedMaxPortfolios = Object.keys(portfolios).length >= 2;
     if (redirectUrl !== null) return <Redirect to={redirectUrl} />;
     return (
-      <div className="App">
-        <div className="dashboardWrapper">
+      <AuthedLayout>
+        <div className="dashboard">
           <Navbar />
-          <div className="dashboardInnerWrapper">
-            <div
-              style={{ margin: "0 10px", zIndex: 5 }}
-              className="fullWidth flexSpaceBetween"
-            >
+          <div className="dashboard__innerWrapper">
+            <div className="dashboard__topRow">
               <CurrencyButton />
-              <div className="flexRight">
-                <ConditionalTooltip
-                  visible={hasCreatedMaxPortfolios}
-                  placement="bottom-end"
-                  title="Maximum number of portfolios created"
+              <ConditionalTooltip
+                visible={hasCreatedMaxPortfolios}
+                placement="bottom-end"
+                title="Maximum number of portfolios created"
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => this.toggleAddModal()}
+                  disabled={hasCreatedMaxPortfolios}
+                  className="servoButton--secondary"
                 >
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => this.toggleAddModal()}
-                    disabled={hasCreatedMaxPortfolios}
-                    className="servoButton--secondary"
+                  <Add style={{ fontSize: "22px", color: "#E94057" }} />
+                  <span
+                    className="primaryGradientText"
+                    style={{ fontSize: "14px", marginLeft: "5px" }}
                   >
-                    <Add style={{ fontSize: "22px", color: "#E94057" }} />
-                    <span
-                      className="primaryGradientText"
-                      style={{ fontSize: "14px", marginLeft: "5px" }}
-                    >
-                      Portfolio
-                    </span>
-                  </Button>
-                </ConditionalTooltip>
-              </div>
+                    Portfolio
+                  </span>
+                </Button>
+              </ConditionalTooltip>
             </div>
-
             {Object.keys(portfolios).map(portfolioKey => (
               <PortfolioCard
                 portfolio={portfolios[portfolioKey]}
@@ -92,60 +89,18 @@ class LoggedInView extends Component {
                 handleRedirect={this.handleRedirect}
               />
             ))}
-
-            <Paper
-              className="paperTableWrapper"
-              style={{
-                backgroundColor: "white",
-                zIndex: 2,
-                overflow: "hidden",
-                marginTop: "20px"
-              }}
-            >
+            <Paper className="dashboard__tableWrapper">
               <Table
                 data={coins.slice(0, 49)}
-                dataDisplayKeys={{
-                  market_cap_rank: true,
-                  name: true,
-                  current_price: true,
-                  total_volume: true,
-                  price_change_percentage_1h_in_currency: true,
-                  price_change_percentage_24h_in_currency: true,
-                  price_change_percentage_7d_in_currency: true,
-                  circulating_supply: true,
-                  ath_change_percentage: true,
-                  market_cap: false,
-                  sparkline_in_7d: true,
-                  roi: false,
-                  holdings: false,
-                  amountPurchased: false,
-                  amountInvested: false,
-                  edit: false
-                }}
-                presetFilters={{
-                  rankingSortDirection: "asc",
-                  nameSortDirection: null,
-                  priceSortDirection: null,
-                  volumeSortDirection: null,
-                  oneHourSortDirection: null,
-                  oneDaySortDirection: null,
-                  sevenDaySortDirection: null,
-                  athSortDirection: null,
-                  holdingsSortDirection: null,
-                  roiSortDirection: null,
-                  amountInvestedSortDirection: null,
-                  amountPurchasedSortDirection: null
-                }}
+                dataDisplayKeys={dashboardTableDisplayKeys}
+                presetFilters={{ rankingSortDirection: "asc" }}
                 presetFilter="rankingSortDirection"
               />
             </Paper>
           </div>
-
           <Modal
             isVisible={isAddModalVisible}
-            toggleModal={() =>
-              this.setState({ isAddModalVisible: !isAddModalVisible })
-            }
+            toggleModal={() => this.toggleAddModal()}
             title="Add a New Portfolio"
           >
             <Input
@@ -163,7 +118,7 @@ class LoggedInView extends Component {
             />
           </Modal>
         </div>
-      </div>
+      </AuthedLayout>
     );
   }
 }
@@ -181,42 +136,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(LoggedInView);
-
-/*
-<MaterialModal
-  aria-labelledby="simple-modal-title"
-  aria-describedby="simple-modal-description"
-  open={isAddModalVisible}
-  onClose={() => this.toggleAddModal()}
-  className="modalContainer"
->
-  <div className="defaultModal">
-    <div className="fullWidth flex">
-      <b> New Portfolio </b>
-    </div>
-    <Input
-      autoFocus
-      label="Name"
-      value={newPortfolioName}
-      onChange={name => this.handleUpdateNewPortfolioName(name)}
-      handleSubmit={e => [
-        e.preventDefault(),
-        this.handleAddNewPortfolio()
-      ]}
-      error={null}
-    />
-    <div
-      className="fullWidth flexRight"
-      style={{ marginTop: "10px" }}
-    >
-      <GradientButton
-        onClick={() => this.handleAddNewPortfolio()}
-        variant="contained"
-        color="purple"
-      >
-        Add
-      </GradientButton>
-    </div>
-  </div>
-</MaterialModal>
-*/

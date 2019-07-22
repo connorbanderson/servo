@@ -4,7 +4,20 @@
   align-items: center;
 }
 
+@mixin flexSpaceBetween {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 @mixin flexCol {
   @include flex;
+  flex-direction: column;
+}
+
+@mixin flexColStart {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
   flex-direction: column;
 }
