@@ -175,10 +175,7 @@ const mapStateToProps = state => ({
   isAuthed: state.auth.isAuthed
 });
 
-const mapDispatchToProps = dispatch => ({
-  createPortfolio: (accountKey, payload) =>
-    dispatch(createPortfolio(accountKey, payload))
-});
+const mapDispatchToProps = dispatch => ({});
 
 export default connect(
   mapStateToProps,

@@ -5,7 +5,8 @@ const default_state = {
   loading: false,
   user: null,
   loginError: null,
-  signUpError: null
+  signUpError: null,
+  initialUserCheck: false,
 }
 
 const no_internet_default_state = {
@@ -74,11 +75,13 @@ export default (state = default_state, action) => {
       return {
         ...state,
         user: action.payload,
-        isAuthed: true
+        isAuthed: true,
+        initialUserCheck: true,
       };
     case "LOGOUT":
       return {
-        ...default_state
+        ...default_state,
+        initialUserCheck: true
       }
     default:
       return state;

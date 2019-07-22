@@ -41,18 +41,14 @@ export const calculatePerformers = (portfolio, timeFrame, coins) => {
 };
 
 export const generateSevenDayLineChartData = (portfolio, coins) => {
-  console.log('hmmm', portfolio, coins)
   const payload = [];
   if (portfolio === undefined || portfolio.coins === undefined) return [];
   const portfolioKeys = Object.keys(portfolio.coins);
   const sparkLineList = [];
-  console.log('portfolioKeys', portfolioKeys)
   portfolioKeys.map(portfolioId => {
     const sparkline = [];
     const investment = portfolio.coins[portfolioId];
-    console.log('investment', investment)
     const currentCoin = coins.filter(coin => coin.id === investment.coin)[0];
-    console.log('currentCoin', currentCoin)
     if (currentCoin) {
       currentCoin.sparkline_in_7d.price.map(price =>
         sparkline.push(price * investment.amountPurchased)
@@ -60,7 +56,6 @@ export const generateSevenDayLineChartData = (portfolio, coins) => {
       sparkLineList.push(sparkline);
     }
   });
-  console.log('sparkLineList', sparkLineList)
   sparkLineList[0].map((item, index) => {
     let priceSum = 0;
     sparkLineList.map(sparkline => (priceSum += sparkline[index]));

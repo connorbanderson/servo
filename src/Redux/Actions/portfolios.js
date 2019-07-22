@@ -11,13 +11,14 @@ import fire from "../../fire";
 // there is a change in data.
 
 export const portfolioListner = () => (dispatch, getState) => {
+  console.log('This is portfoliio listern')
   const { auth } = getState();
-  let portfoliosObject = {};
+  console.log('Auth...', auth)
   fire
     .database()
     .ref(`${auth.user.uid}/portfolios`)
     .on("value", snap => {
-      console.log('PORTFOLIO LISTENER!!!!!');
+      const portfoliosObject = {}
       snap.forEach(portfolio => {
         const portfolioObject = portfolio.val();
         portfoliosObject[portfolio.key] = portfolioObject;

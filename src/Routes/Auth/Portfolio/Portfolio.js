@@ -36,7 +36,6 @@ import ProfitChart from "../../../Components/ProfitChart";
 
 import SevenDayGraph from "../../../Components/SevenDayGraph";
 import DeleteIcon from "@material-ui/icons/Delete";
-
 import Paper from "@material-ui/core/Paper";
 import Modal from "@material-ui/core/Modal";
 import {
@@ -56,7 +55,6 @@ import ArrowDropUp from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 import KeyboardBackspace from "@material-ui/icons/KeyboardBackspace";
 import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
 // Style
 import "./Portfolio.scss";
 
@@ -308,29 +306,14 @@ class Portfolio extends Component {
     return _.orderBy(payload, "total", "desc");
   };
 
-  longestSubsequence = (x, y) => {
-    let subsequenceLength = 0;
-    if (x.length === 0 || y.length === 0) return subsequenceLength;
-    const xSubset = [...x].slice(1);
-    const ySubset = [...y].slice(1);
-    if (x[0] === y[0]) {
-      subsequenceLength = 1 + this.longestSubsequence(xSubset, ySubset);
-    } else {
-      const pathOne = this.longestSubsequence(x, ySubset);
-      const pathTwo = this.longestSubsequence(xSubset, y);
-      subsequenceLength = pathOne >= pathTwo ? pathOne : pathTwo;
-    }
-    return subsequenceLength;
-  };
-
   render() {
+    console.log('this is portfolio!!')
     const {
       portfolios,
       user,
       portfolioListner,
       coins,
       isAuthed,
-      deletePortfolio,
       match
     } = this.props;
     const {
@@ -366,6 +349,7 @@ class Portfolio extends Component {
       portfolios.portfolios !== null
         ? portfolios.portfolios[`-${this.props.match.params.id}`]
         : null;
+
     if (selectedPortfolio === null) return <Loader />;
     if (user !== null && portfolios.portfolios !== null && coins.length > 0) {
       userCoinTableList = this.generatePortfolioTable(selectedPortfolio);
@@ -391,6 +375,7 @@ class Portfolio extends Component {
         coins
       );
     }
+
     if (selectedPortfolio === undefined || !isAuthed)
       return <Redirect to="/" />;
     if (redirectUrl !== null) return <Redirect to={redirectUrl} />;
@@ -787,8 +772,7 @@ const mapDispatchToProps = dispatch => ({
   deleteCoinFromPortfolio: payload =>
     dispatch(deleteCoinFromPortfolio(payload)),
   portfolioListner: payload => dispatch(portfolioListner(payload)),
-  editPortfolioName: payload => dispatch(editPortfolioName(payload)),
-  deletePortfolio: payload => dispatch(deletePortfolio(payload))
+  editPortfolioName: payload => dispatch(editPortfolioName(payload))
 });
 
 export default connect(

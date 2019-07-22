@@ -34,7 +34,6 @@ ReactDOM.render(
     <ThemeProvider theme={theme}>
       <Router history={history}>
         <Route exact path="/" component={AppController} />
-        <Route path="/portfolio/:id" component={Portfolio} />
       </Router>
     </ThemeProvider>
   </Provider>,
