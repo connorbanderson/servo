@@ -143,7 +143,7 @@ class Portfolio extends Component {
   };
 
   handleAddCoinToPortfolio = () => {
-    const { user, addCoinToPortfolio, match } = this.props;
+    const { user, match } = this.props;
     const { coinToAdd, amountInvested, amountPurchased } = this.state;
 
     const numberChecker = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
@@ -161,6 +161,7 @@ class Portfolio extends Component {
     };
     if (isAmountInvestedValid && isAmountPurchasedValid) {
       addCoinToPortfolio(payload);
+      this.toggleAddModal(null)
     } else {
       this.setState({
         amountInvestedError: !isAmountInvestedValid,
