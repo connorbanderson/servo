@@ -7,11 +7,12 @@ import history from "./history";
 import * as serviceWorker from "./serviceWorker";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
-import { purple } from "@material-ui/core/colors";
-import { MATERIAL_PRIMARY_THEME_COLOR, MATERIAL_SECONDARY_THEME_COLOR } from './constants'
+import {
+  MATERIAL_PRIMARY_THEME_COLOR,
+  MATERIAL_SECONDARY_THEME_COLOR
+} from "./constants";
 // Components
 import AppController from "./AppController";
-import Portfolio from "./Routes/Auth/Portfolio/Portfolio";
 // Style Imports
 import "./styles/global.scss";
 
@@ -23,9 +24,7 @@ const theme = createMuiTheme({
     secondary: { main: MATERIAL_SECONDARY_THEME_COLOR }
   },
   typography: {
-    fontFamily: [
-      "Poppins",
-    ].join(",")
+    fontFamily: ["Poppins"].join(",")
   }
 });
 
