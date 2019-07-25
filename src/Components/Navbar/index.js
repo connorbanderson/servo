@@ -3,17 +3,10 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 
 // Component Imports
-import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import Person from "@material-ui/icons/Person";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import ExitToApp from "@material-ui/icons/ExitToApp";
-import PersonOutline from "@material-ui/icons/PersonOutline";
-import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Avatar from "../Avatar";
+import Menu from "./menu";
 
 //Redux
 import { logout } from "../../Redux/Actions/auth";
@@ -32,7 +25,6 @@ import {
 } from "../../constants";
 
 const Navbar = ({ user, logout }) => {
-  const handleClose = () => updateAnchorEl(null);
   const [anchorEl, updateAnchorEl] = useState(null);
   const avatarColorId = user.uid.replace(ONLY_INT_REGX, "") % 14;
   const userName = user.displayName !== null ? user.displayName : user.email;
@@ -58,26 +50,10 @@ const Navbar = ({ user, logout }) => {
             <ExpandMore fontSize="inherit" />
           </IconButton>
           <Menu
-            id="simple-menu"
             anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            className="navBar__menu"
-          >
-            <MenuItem disabled onClick={handleClose}>
-              <div className="navBar__menuItemWrapper">
-                <PersonOutline className="navBar__menuItemIcon" />
-                Profile
-              </div>
-            </MenuItem>
-            <MenuItem onClick={() => [handleClose, logout()]}>
-              <div className="navBar__menuItemWrapper">
-                <ExitToApp className="navBar__menuItemIcon" />
-                Logout
-              </div>
-            </MenuItem>
-          </Menu>
+            logout={logout}
+            handleClose={() => updateAnchorEl(null)}
+          />
         </div>
       </div>
     </nav>
