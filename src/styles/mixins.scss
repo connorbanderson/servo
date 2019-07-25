@@ -4,10 +4,46 @@
   background: -webkit-linear-gradient(45deg, $primaryColor 30%, $primaryColor2);
 }
 
+@mixin innerWrapper{
+  max-width: $maxWidth;
+  width: 100%;
+  padding: 0px 10px;
+}
+
+@mixin paper1 {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.14), 0 2px 4px rgba(0,0,0,0.21);
+}
+
 @mixin flex {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@mixin flexLeft{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+@mixin flexColLeft{
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+@mixin flexRight{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+@mixin flexColRight{
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-direction: column;
 }
 
 @mixin flexSpaceBetween {
