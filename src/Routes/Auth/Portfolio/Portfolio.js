@@ -35,7 +35,7 @@ import Autocomplete from "../../../Components/Autocomplete";
 import ArrowStat from "../../../Components/ArrowStat";
 import Input from "../../../Components/Input/input.js";
 import ProfitChart from "../../../Components/ProfitChart";
-
+import AddCoinPortfolioModal from "../../../Components/AddCoinPortfolioModal"
 import SevenDayGraph from "../../../Components/SevenDayGraph";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Paper from "@material-ui/core/Paper";
@@ -142,33 +142,7 @@ class Portfolio extends Component {
     }
   };
 
-  handleAddCoinToPortfolio = () => {
-    const { user, match } = this.props;
-    const { coinToAdd, amountInvested, amountPurchased } = this.state;
 
-    const numberChecker = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
-    const isAmountInvestedValid = numberChecker.test(amountInvested);
-    const isAmountPurchasedValid = numberChecker.test(amountPurchased);
-
-    const payload = {
-      accountKey: user.uid,
-      portfolioKey: `-${match.params.id}`,
-      coinInfo: {
-        coin: coinToAdd,
-        amountPurchased: parseInt(amountPurchased),
-        amountInvested: parseInt(amountInvested)
-      }
-    };
-    if (isAmountInvestedValid && isAmountPurchasedValid) {
-      addCoinToPortfolio(payload);
-      this.toggleAddModal(null)
-    } else {
-      this.setState({
-        amountInvestedError: !isAmountInvestedValid,
-        amountPurchasedError: !isAmountPurchasedValid
-      });
-    }
-  };
 
   handleEditCoinPortfolio = selectedPortfolio => {
     const { user, addCoinToPortfolio, portfolios, match } = this.props;
@@ -478,93 +452,17 @@ class Portfolio extends Component {
             </div>
           )}
         </div>
-        <Modal
-          aria-labelledby="simple-modal-title"
-          aria-describedby="simple-modal-description"
-          open={isAddModalVisible}
-          onClose={() => this.toggleAddModal()}
-          className="modalContainer"
-        >
-          <div className="defaultModal">
-            <div className="fullWidth flex">
-              Adding
-              <img
-                src={
-                  coinToAdd &&
-                  coins.filter(coin => coin.id === coinToAdd)[0].image
-                }
-                alt={
-                  coinToAdd &&
-                  coins.filter(coin => coin.id === coinToAdd)[0].name
-                }
-                style={{
-                  height: "24px",
-                  width: "24px",
-                  margin: "0 5px"
-                }}
-              />
-              {coinToAdd} to Portfolio
-            </div>
-            <Input
-              autoFocus
-              label="Amount Invested"
-              type="number"
-              value={amountInvested}
-              onChange={amountInvested =>
-                this.handleUpdateAmountInvested(amountInvested)
-              }
-              handleSubmit={e => [
-                e.preventDefault(),
-                this.handleAddCoinToPortfolio()
-              ]}
-              error={amountInvestedError}
-              helperText={
-                amountInvestedError
-                  ? "Please Enter a valid Positive Number"
-                  : null
-              }
-              clearError={() =>
-                this.setState({
-                  amountInvestedError: false,
-                  amountPurchasedError: false
-                })
-              }
-            />
-            <Input
-              label="Amount Purchased"
-              type="number"
-              onChange={amountPurchased =>
-                this.handleUpdateAmountPurchased(amountPurchased)
-              }
-              value={amountPurchased}
-              handleSubmit={e => [
-                e.preventDefault(),
-                this.handleAddCoinToPortfolio()
-              ]}
-              error={amountPurchasedError}
-              helperText={
-                amountPurchasedError
-                  ? "Please Enter a valid Positive Number"
-                  : null
-              }
-              clearError={() =>
-                this.setState({
-                  amountInvestedError: false,
-                  amountPurchasedError: false
-                })
-              }
-            />
-            <div className="fullWidth flexRight">
-              <GradientButton
-                onClick={() => this.handleAddCoinToPortfolio()}
-                variant="contained"
-                color="purple"
-              >
-                Add
-              </GradientButton>
-            </div>
-          </div>
-        </Modal>
+
+        <AddCoinPortfolioModal
+          isVisible={isAddModalVisible}
+          toggleVisible={() => this.toggleAddModal()}
+          coinToAdd={coinToAdd}
+          addCoinToPortfolio={addCoinToPortfolio}
+          user={user}
+          match={match}
+        />
+
+
         <Modal
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"

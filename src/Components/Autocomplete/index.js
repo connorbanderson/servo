@@ -11,8 +11,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 
-function renderInputComponent(inputProps) {
-  const { classes, inputRef = () => {}, ref, ...other } = inputProps
+const renderInputComponent = inputProps => {
+  const { classes, inputRef = () => {}, ref, ...other } = inputProps;
   return (
     <div className="flex">
       <TextField
@@ -34,9 +34,9 @@ function renderInputComponent(inputProps) {
       </IconButton>
     </div>
   );
-}
+};
 
-function renderSuggestion(suggestion, { query, isHighlighted }) {
+const renderSuggestion = (suggestion, { query, isHighlighted }) => {
   const matches = match(suggestion.label, query);
   const parts = parse(suggestion.label, matches);
   return (
@@ -58,9 +58,9 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
       </div>
     </MenuItem>
   );
-}
+};
 
-function getSuggestions(value, suggestionList) {
+const getSuggestions = (value, suggestionList) => {
   const inputValue = deburr(value.trim()).toLowerCase();
   const inputLength = inputValue.length;
   let count = 0;
@@ -75,7 +75,7 @@ function getSuggestions(value, suggestionList) {
         }
         return keep;
       });
-}
+};
 
 function getSuggestionValue(suggestion) {
   return suggestion.label;
@@ -121,22 +121,18 @@ export default function IntegrationAutosuggest({ coins, onAdd }) {
     popper: ""
   });
   const [stateSuggestions, setSuggestions] = React.useState([]);
-
   const handleSuggestionsFetchRequested = ({ value }) => {
     setSuggestions(getSuggestions(value, suggestionList));
   };
-
   const handleSuggestionsClearRequested = () => {
     setSuggestions([]);
   };
-
   const handleChange = name => (event, { newValue }) => {
     setState({
       ...state,
       [name]: newValue
     });
   };
-
   const autosuggestProps = {
     renderInputComponent,
     suggestions: stateSuggestions,
@@ -145,7 +141,6 @@ export default function IntegrationAutosuggest({ coins, onAdd }) {
     getSuggestionValue,
     renderSuggestion
   };
-
   return (
     <div
       onKeyDown={e =>
@@ -153,7 +148,7 @@ export default function IntegrationAutosuggest({ coins, onAdd }) {
         autosuggestProps.suggestions.length > 0 && [
           onAdd(autosuggestProps.suggestions[0].id),
           e.preventDefault(),
-          setState({ ...state, popper: "" }),
+          setState({ ...state, popper: "" })
         ]
       }
       className={classes.root}
@@ -163,7 +158,7 @@ export default function IntegrationAutosuggest({ coins, onAdd }) {
         inputProps={{
           classes,
           id: "react-autosuggest-popper",
-          placeholder: "Seach For Crypto To Add...",
+          placeholder: "Seach For Coin To Add...",
           value: state.popper,
           onChange: handleChange("popper"),
           onSubmit: onAdd,
