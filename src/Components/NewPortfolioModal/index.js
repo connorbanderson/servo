@@ -16,7 +16,7 @@ const NewPortfolioModal = ({ user, isVisible, toggleVisible }) => {
   return (
     <Modal
       isVisible={isVisible}
-      toggleModal={() => this.toggleVisible()}
+      toggleModal={toggleVisible}
       title="Add a New Portfolio"
     >
       <Input
