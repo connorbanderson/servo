@@ -1,7 +1,6 @@
 // Frontend Libs
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
-import TextField from "@material-ui/core/TextField";
 import { connect } from "react-redux";
 import { authListener } from "../../../Redux/Actions/auth";
 import { portFolioTableDisplayKeys } from "../../../constants.js";
@@ -16,12 +15,10 @@ import {
 import { fetchTop250 } from "../../../Redux/Actions/coins";
 import _ from "lodash";
 import {
-  round,
   calculateHoldings,
   generateSevenDayLineChartData,
   generatePerformanceStats,
   commarize,
-  styleRedGreen,
   validatePortfolioName
 } from "../../../utils";
 // Components
@@ -35,26 +32,11 @@ import Autocomplete from "../../../Components/Autocomplete";
 import ArrowStat from "../../../Components/ArrowStat";
 import Input from "../../../Components/Input/input.js";
 import ProfitChart from "../../../Components/ProfitChart";
-import AddCoinPortfolioModal from "../../../Components/AddCoinPortfolioModal"
+import AddCoinPortfolioModal from "../../../Components/AddCoinPortfolioModal";
 import SevenDayGraph from "../../../Components/SevenDayGraph";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Paper from "@material-ui/core/Paper";
 import Modal from "@material-ui/core/Modal";
-import {
-  LineChart,
-  Line,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  Cell,
-  YAxis,
-  XAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
-} from "recharts";
-import ArrowDropUp from "@material-ui/icons/ArrowDropUp";
-import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 import KeyboardBackspace from "@material-ui/icons/KeyboardBackspace";
 import Button from "@material-ui/core/Button";
 // Style
@@ -109,7 +91,6 @@ class Portfolio extends Component {
 
   toggleAddModal = selectedCoin => {
     const { isAddModalVisible } = this.state;
-    const { coins } = this.props;
     this.setState({
       isAddModalVisible: !isAddModalVisible,
       coinToAdd: selectedCoin
@@ -142,14 +123,9 @@ class Portfolio extends Component {
     }
   };
 
-
-
   handleEditCoinPortfolio = selectedPortfolio => {
-    const { user, addCoinToPortfolio, portfolios, match } = this.props;
+    const { user, match } = this.props;
     const {
-      coinToAdd,
-      amountInvested,
-      amountPurchased,
       editAmountPurchased,
       editAmountInvested,
       coinToEdit
@@ -186,7 +162,7 @@ class Portfolio extends Component {
 
   handleEditPortfolio = selectedPortfolio => {
     const { newPortfolioName } = this.state;
-    const { user, match, editPortfolioName } = this.props;
+    const { user, match } = this.props;
     const isNewPortfolioNameValid = validatePortfolioName(newPortfolioName);
     if (isNewPortfolioNameValid) {
       editPortfolioName({
@@ -298,13 +274,9 @@ class Portfolio extends Component {
       coinToAdd,
       coinToEdit,
       isEditModalVisible,
-      amountPurchased,
-      amountInvested,
       editAmountPurchased,
       editAmountInvested,
       redirectUrl,
-      amountInvestedError,
-      amountPurchasedError,
       editAmountInvestedError,
       editAmountPurchasedError,
       newPortfolioName,
@@ -359,22 +331,14 @@ class Portfolio extends Component {
 
     const emptyPortfolio = selectedPortfolio.coins === undefined;
     return (
-      <div className="portfolioPageWrapper flexColStart">
+      <div className="portfolio">
         <Navbar user={user} />
-        <div className="portfolioInnerWrapper">
-          <div
-            style={{ margin: "0 10px" }}
-            className="fullWidth flexSpaceBetween"
-          >
-            <div className="flexLeft">
-              <Button
-                onClick={() => this.setState({ redirectUrl: "/" })}
-                style={{ marginRight: "20px" }}
-              >
-                <KeyboardBackspace />
-                <span style={{ marginLeft: "4px" }}>Back</span>
-              </Button>
-            </div>
+        <div className="portfolio__wrapper">
+          <div className="portfolio__topRow">
+            <Button onClick={() => this.setState({ redirectUrl: "/" })}>
+              <KeyboardBackspace />
+              <span style={{ marginLeft: "4px" }}>Back</span>
+            </Button>
             <div style={{ width: "300px", paddingBottom: "10px" }}>
               <Autocomplete
                 style={{ position: "relative", zIndex: 99 }}
@@ -384,45 +348,44 @@ class Portfolio extends Component {
             </div>
           </div>
 
-          {coins.length > 0 && (
-            <Paper className="portfolioTopPaper flexSpaceBetween">
-              <div style={{ width: "25%" }} className="flexLeft">
-                <GradientText text={selectedPortfolio.name} />
-              </div>
-              <div className="flex">
-                <ArrowStat
-                  performance={oneHourPerformance}
-                  emptyPortfolio={emptyPortfolio}
-                  text="1H Performance"
-                />
-                <ArrowStat
-                  performance={oneDayPerformance}
-                  emptyPortfolio={emptyPortfolio}
-                  text="24H Performance"
-                />
-                <ArrowStat
-                  performance={sevenDayPerformance}
-                  emptyPortfolio={emptyPortfolio}
-                  text="7D Performance"
-                />
-              </div>
-              <div style={{ width: "25%" }} className="flexRight">
-                <GradientPrice price={holdings} />
-                <Button
-                  onClick={() =>
-                    this.setState({
-                      isEditPortfolioModalVisible: !isEditPortfolioModalVisible
-                    })
-                  }
-                  variant="outlined"
-                  color="primary"
-                  style={{ marginLeft: "25px" }}
-                >
-                  Edit
-                </Button>
-              </div>
-            </Paper>
-          )}
+          <Paper className="portfolioTopPaper flexSpaceBetween">
+            <div style={{ width: "25%" }} className="flexLeft">
+              <GradientText text={selectedPortfolio.name} />
+            </div>
+            <div className="flex">
+              <ArrowStat
+                performance={oneHourPerformance}
+                emptyPortfolio={emptyPortfolio}
+                text="1H Performance"
+              />
+              <ArrowStat
+                performance={oneDayPerformance}
+                emptyPortfolio={emptyPortfolio}
+                text="24H Performance"
+              />
+              <ArrowStat
+                performance={sevenDayPerformance}
+                emptyPortfolio={emptyPortfolio}
+                text="7D Performance"
+              />
+            </div>
+            <div style={{ width: "25%" }} className="flexRight">
+              <GradientPrice price={holdings} />
+              <Button
+                onClick={() =>
+                  this.setState({
+                    isEditPortfolioModalVisible: !isEditPortfolioModalVisible
+                  })
+                }
+                variant="outlined"
+                color="primary"
+                style={{ marginLeft: "25px" }}
+              >
+                Edit
+              </Button>
+            </div>
+          </Paper>
+   
 
           <SevenDayGraph coins={coins} data={sevenDayPriceData} />
           <ProfitChart coins={coins} data={barChartData} />
@@ -461,7 +424,6 @@ class Portfolio extends Component {
           user={user}
           match={match}
         />
-
 
         <Modal
           aria-labelledby="simple-modal-title"
@@ -651,8 +613,7 @@ const mapDispatchToProps = dispatch => ({
   editPortfolioCoin: payload => dispatch(editPortfolioCoin(payload)),
   deleteCoinFromPortfolio: payload =>
     dispatch(deleteCoinFromPortfolio(payload)),
-  portfolioListner: payload => dispatch(portfolioListner(payload)),
-  editPortfolioName: payload => dispatch(editPortfolioName(payload))
+  portfolioListner: payload => dispatch(portfolioListner(payload))
 });
 
 export default connect(

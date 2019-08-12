@@ -1,21 +1,7 @@
-.portfolioPageWrapper{
-  position: relative;
-  height: 100vh;
-  min-height: 800px;
-  width: 100%;
-  padding-top: 80px;
-  .portfolioInnerWrapper{
-    position: relative;
-    height: auto;
-    width: 100%;
-    max-width: 1300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 30px
-  }
-}
+@import "../../../styles/variables";
+@import "../../../styles/mixins";
+
+
 
 .customButtonGroup{
   .currencyButton{
@@ -81,4 +67,25 @@
   opacity: 0;
   border-radius: 4px;
   animation: fadeIn forwards cubic-bezier(.25,.8,.25,1) 0.5s;
+}
+
+.portfolio{
+  position: relative;
+  @include flexColStart;
+  height: 100vh;
+  min-height: 800px;
+  width: 100%;
+  padding: 80px 20px 30px 20px;
+  &__wrapper{
+    position: relative;
+    @include flex;
+    flex-wrap: wrap;
+    height: auto;
+    width: 100%;
+    max-width: 1300px;
+  }
+  &__topRow{
+    @include flexSpaceBetween;
+    width: 100%;
+  }
 }
