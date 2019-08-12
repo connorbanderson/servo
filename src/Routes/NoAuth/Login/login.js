@@ -8,24 +8,13 @@ import {
   clearSignUpError,
   authListener
 } from "../../../Redux/Actions/auth";
-// Frontend Lib Imports
-
-// Util Import
 import { validateEmail, validatePassword } from "../../../utils";
-
-// Constants Import
 import { CLIENT_VALIDATION_ERRORS } from "../../../constants";
-
-// Style Imports
 import "./login.scss";
-
-//SVG Imports
 import logo from "./logo.svg";
 import googleIcon from "./googleIcon.svg";
 import circuitboard from "./circuitboard.svg";
 import circuitboardWhite from "./circuitboardWhite.svg";
-
-//Component Imports
 import Input from "../../../Components/Input/input.js";
 import GradientButton from "../../../Components/GradientButton";
 
@@ -181,7 +170,9 @@ class Login extends Component {
               ]}
               error={loginEmailError || auth.loginError !== null}
               helperText={
-                loginEmailError ? CLIENT_VALIDATION_ERRORS['INVALID_EMAIL'] : null
+                loginEmailError
+                  ? CLIENT_VALIDATION_ERRORS["INVALID_EMAIL"]
+                  : null
               }
               clearError={() => [
                 this.setState({
@@ -195,9 +186,7 @@ class Login extends Component {
               <Input
                 label="Password"
                 type="password"
-                onChange={password =>
-                  this.setState({ loginPassword: password })
-                }
+                onChange={pw => this.setState({ loginPassword: pw })}
                 handleSubmit={e => [
                   e.preventDefault(),
                   this.handleLoginRequest()
@@ -205,7 +194,7 @@ class Login extends Component {
                 error={loginPasswordError || auth.loginError !== null}
                 helperText={
                   loginPasswordError
-                    ? CLIENT_VALIDATION_ERRORS['PASSWORD_LENGTH']
+                    ? CLIENT_VALIDATION_ERRORS["PASSWORD_LENGTH"]
                     : auth.loginError
                 }
                 clearError={() => [
@@ -278,7 +267,7 @@ class Login extends Component {
               error={signupEmailError || auth.signUpError !== null}
               helperText={
                 signupEmailError
-                  ? CLIENT_VALIDATION_ERRORS['INVALID_EMAIL']
+                  ? CLIENT_VALIDATION_ERRORS["INVALID_EMAIL"]
                   : null
               }
               clearError={() => [
@@ -305,7 +294,7 @@ class Login extends Component {
                 error={signupPasswordError || auth.signUpError !== null}
                 helperText={
                   signupPasswordError
-                    ? CLIENT_VALIDATION_ERRORS['PASSWORD_LENGTH']
+                    ? CLIENT_VALIDATION_ERRORS["PASSWORD_LENGTH"]
                     : auth.signUpError
                 }
                 clearError={() => [
