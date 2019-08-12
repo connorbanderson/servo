@@ -69,7 +69,7 @@ const Modal = ({
           <Button
             variant="contained"
             color="primary"
-            onClick={() => null}
+            onClick={() => onSubmit()}
             disabled={false}
             className="servoButton--primary"
           >
